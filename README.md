@@ -10,3 +10,15 @@
 - [ ] Users can leave comments and ratings on recipes.
 - [ ] Users can favorite recipes.
 - [ ] Each user has a profile page that shows their recipes and information about the user
+
+## Usage
+First set up the database
+```
+$ sqlite database.db
+sqlite> .read schema.sql
+```
+
+You can then run the app with
+```
+flask run
+```
