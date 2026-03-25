@@ -1,7 +1,7 @@
 # Recipes app
 
 ## Features
-- [ ] Users can create an account and log in
+- [x] Users can create an account and log in
 - [ ] Users can add recipes with a title, ingredients and instructions.
 - [ ] Users can edit and delete their own recipes
 - [ ] Users can browse and view recipes added by any user

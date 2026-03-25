@@ -7,6 +7,23 @@
     <body>
         <h1>Recipes</h1>
 
-        <a href="/register">Rekisteröinti</a>
+        {% if session.username %}
+        <p>You are logged in as {{ session.username }}</p>
+
+        <a href="/logout">Log out</a>
+        {% else %}
+        <form action="/login" method="post">
+            <p>
+                Username: <br />
+                <input type="text" name="username" />
+            </p>
+            <p>
+                Password: <br />
+                <input type="password" name="password" />
+            </p>
+            <input type="submit" value="Log in" />
+        </form>
+        <a href="/register">Register account</a>
+        {% endif %}
     </body>
 </html>
