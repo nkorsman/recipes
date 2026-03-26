@@ -9,6 +9,13 @@
 
         {% if session.username %}
         <p>You are logged in as {{ session.username }}</p>
+        <form action="/create-recipe" method="post">
+            <p>
+                Recipe title: <br />
+                <input type="text" name="title" />
+            </p>
+            <input type="submit" value="Create recipe" />
+        </form>
 
         <a href="/logout">Log out</a>
         {% else %}

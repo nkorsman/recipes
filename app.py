@@ -67,3 +67,35 @@ def create_user():
         return "ERROR: Username taken"
 
     return f"User {username} created"
+
+
+@app.route("/create-recipe", methods=["POST"])
+def create_recipe():
+    username = session["username"]
+
+    sql = "SELECT id FROM Users WHERE username = ?"
+    row = database.query_db(sql, [username], one=True)
+    if row is None:
+        return "ERROR: User not found"
+
+    author_id = row[0]
+
+    title = request.form["title"]
+
+    db = database.get_db()
+    sql = "INSERT INTO Recipes (title, author_id) VALUES (?, ?)"
+    db.execute(sql, [title, author_id])
+    db.commit()
+
+    return "Recipe created successfully"
+
+
+@app.route("/recipe/<int:recipe_id>")
+def show_recipe(recipe_id):
+    sql = "SELECT title FROM Recipes WHERE id = ?"
+    row = database.query_db(sql, [recipe_id], one=True)
+    if row is None:
+        return "ERROR: Recipe not found"
+    title = row[0]
+
+    return render_template("recipe.html", recipe_title=title)
