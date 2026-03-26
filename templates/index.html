@@ -18,5 +18,14 @@
         </p>
         {% endif %}
         <hr />
+        <h2>All recipes</h2>
+        <ul>
+            {% for recipe in recipes %}
+            <li>
+                <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a> by
+                {{recipe.username}}
+            </li>
+            {% endfor %}
+        </ul>
     </body>
 </html>

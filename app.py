@@ -5,6 +5,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 import config
 import database
+import recipe
 
 app = Flask(__name__)
 app.teardown_appcontext(database.close_db)
@@ -13,7 +14,8 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    recipes = recipe.get_recipes()
+    return render_template("index.html", recipes=recipes)
 
 
 @app.route("/register")
