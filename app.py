@@ -74,7 +74,7 @@ def create_user():
     return f"User {username} created"
 
 
-@app.route("/create-recipe", methods=["POST"])
+@app.route("/create-recipe")
 def create_recipe():
     username = session["username"]
 
@@ -85,22 +85,28 @@ def create_recipe():
 
     author_id = row[0]
 
-    title = request.form["title"]
+    recipe_id = recipe.new_recipe(author_id)
 
-    db = database.get_db()
-    sql = "INSERT INTO Recipes (title, author_id) VALUES (?, ?)"
-    db.execute(sql, [title, author_id])
-    db.commit()
-
-    return "Recipe created successfully"
+    return redirect(f"/edit/{recipe_id}")
 
 
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
-    sql = "SELECT title FROM Recipes WHERE id = ?"
-    row = database.query_db(sql, [recipe_id], one=True)
-    if row is None:
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
         return "ERROR: Recipe not found"
-    title = row[0]
 
-    return render_template("recipe.html", recipe_title=title)
+    return render_template("recipe.html", recipe=r)
+
+
+@app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
+def edit_recipe(recipe_id):
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
+        return "ERROR: Recipe not found"
+
+    if request.method == "POST":
+        title = request.form["title"]
+        r = recipe.update_recipe(recipe_id, title)
+
+    return render_template("edit.html", recipe=r)

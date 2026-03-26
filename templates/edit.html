@@ -17,21 +17,10 @@
             {% endif %}
         </p>
         <hr />
-        <h2>Register</h2>
-        <form action="/create-user" method="post">
-            <p>
-                Username: <br />
-                <input type="text" name="username" />
-            </p>
-            <p>
-                Password: <br />
-                <input type="password" name="password1" />
-            </p>
-            <p>
-                Password again: <br />
-                <input type="password" name="password2" />
-            </p>
-            <input type="submit" value="Create account" />
+        <h2>{{ recipe.title }}</h2>
+        <form method="post">
+            <input type="text" name="title" />
+            <input type="submit" value="Rename" />
         </form>
     </body>
 </html>
