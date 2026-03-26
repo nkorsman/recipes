@@ -5,18 +5,16 @@
     </head>
     <body>
         <h1>Recipes</h1>
-        {% if session.username %}
         <p>
-            You are logged in as {{ session.username }} |
+            <a href="/">Home</a> | {% if session.username %} You are logged in
+            as {{ session.username }} |
             <a href="/logout">Log out</a>
-        </p>
-        {% else %}
-        <p>
+            {% else %}
             <a href="/login">Log in</a> |
             <a href="/register">Register</a>
+            {% endif %}
         </p>
-        {% endif %}
         <hr />
-        <h2>{{ recipe_title }}</h2>
+        <h2>{{ recipe.title }}</h2>
     </body>
 </html>

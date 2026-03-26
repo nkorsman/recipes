@@ -6,17 +6,15 @@
 
     <body>
         <h1>Recipes</h1>
-        {% if session.username %}
         <p>
-            You are logged in as {{ session.username }} |
+            <a href="/">Home</a> | {% if session.username %} You are logged in
+            as {{ session.username }} |
             <a href="/logout">Log out</a>
-        </p>
-        {% else %}
-        <p>
+            {% else %}
             <a href="/login">Log in</a> |
             <a href="/register">Register</a>
+            {% endif %}
         </p>
-        {% endif %}
         <hr />
         <h2>Register</h2>
         <form action="/create-user" method="post">
