@@ -84,8 +84,20 @@ def create_recipe():
         return "ERROR: User not found"
 
     author_id = row[0]
+    title = "Untitled recipe"
 
-    recipe_id = recipe.new_recipe(author_id)
+    recipe_id = recipe.new_recipe(author_id, title)
+
+    return redirect(f"/edit/{recipe_id}")
+
+
+@app.route("/create-ingredient", methods=["POST"])
+def create_ingredient():
+    recipe_id = request.form["recipe_id"]
+    ingredient_number = recipe.next_ingredient_number(recipe_id)
+    content = request.form["content"]
+
+    recipe.new_ingredient(recipe_id, ingredient_number, content)
 
     return redirect(f"/edit/{recipe_id}")
 
@@ -95,18 +107,24 @@ def show_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
     if r is None:
         return "ERROR: Recipe not found"
+    ingredients = recipe.get_ingredients(recipe_id)
 
-    return render_template("recipe.html", recipe=r)
+    return render_template("recipe.html", recipe=r, ingredients=ingredients)
 
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 def edit_recipe(recipe_id):
+    if request.method == "POST":
+        title = request.form["title"]
+        recipe.update_recipe(recipe_id, title)
+
     r = recipe.get_recipe(recipe_id)
     if r is None:
         return "ERROR: Recipe not found"
+    ingredients = recipe.get_ingredients(recipe_id)
 
-    if request.method == "POST":
-        title = request.form["title"]
-        r = recipe.update_recipe(recipe_id, title)
-
-    return render_template("edit.html", recipe=r)
+    return render_template(
+        "edit.html",
+        recipe=r,
+        ingredients=ingredients,
+    )

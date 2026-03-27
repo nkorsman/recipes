@@ -19,8 +19,36 @@
         <hr />
         <h2>{{ recipe.title }}</h2>
         <form method="post">
-            <input type="text" name="title" />
+            <input type="text" name="title" placeholder="New recipe title" />
             <input type="submit" value="Rename" />
+        </form>
+
+        <h3>Ingredients</h3>
+        <ul>
+            {% for ingredient in ingredients %}
+            <li>{{ ingredient.content }}</li>
+            {% endfor %}
+            <li>
+                <form action="/create-ingredient" method="post">
+                    <input
+                        type="hidden"
+                        name="recipe_id"
+                        value="{{ recipe.id }}"
+                    />
+                    <input
+                        type="text"
+                        name="content"
+                        placeholder="New ingredient"
+                    />
+                    <input type="submit" value="Add ingredient" />
+                </form>
+            </li>
+        </ul>
+
+        <h3>Instructions</h3>
+
+        <form action="/recipe/{{ recipe.id }}">
+            <input type="submit" value="Finish editing" />
         </form>
     </body>
 </html>

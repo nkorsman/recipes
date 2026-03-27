@@ -17,5 +17,18 @@
         </p>
         <hr />
         <h2>{{ recipe.title }}</h2>
+
+        <h3>Ingredients</h3>
+        <ul>
+            {% for ingredient in ingredients %}
+            <li>{{ ingredient.content }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Instructions</h3>
+
+        <form action="/edit/{{ recipe.id }}">
+            <input type="submit" value="Edit recipe" />
+        </form>
     </body>
 </html>

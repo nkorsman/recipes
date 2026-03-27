@@ -12,8 +12,7 @@ CREATE TABLE Recipes (
 
 CREATE TABLE RecipeIngredients (
     id INTEGER PRIMARY KEY,
-    name TEXT,
-    amount TEXT,
+    content TEXT,
     ingredient_number INTEGER,
     recipe_id INTEGER REFERENCES Recipes
 );
