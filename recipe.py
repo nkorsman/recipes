@@ -28,6 +28,21 @@ def update_recipe(id, title):
     db.commit()
 
 
+def delete_recipe(id):
+    db = database.get_db()
+
+    sql = "DELETE FROM RecipeIngredients WHERE recipe_id = ?"
+    db.execute(sql, [id])
+
+    sql = "DELETE FROM RecipeInstructions WHERE recipe_id = ?"
+    db.execute(sql, [id])
+
+    sql = "DELETE FROM Recipes WHERE id = ?"
+    db.execute(sql, [id])
+
+    db.commit()
+
+
 def get_ingredients(recipe_id):
     sql = """SELECT id, content, ingredient_number
              FROM RecipeIngredients
@@ -54,6 +69,13 @@ def new_ingredient(recipe_id, number, content):
     db.commit()
 
 
+def delete_ingredient(id):
+    db = database.get_db()
+    sql = "DELETE FROM RecipeIngredients WHERE id = ?"
+    db.execute(sql, [id])
+    db.commit()
+
+
 def get_instructions(recipe_id):
     sql = """SELECT id, content, instruction_number
              FROM RecipeInstructions
@@ -77,4 +99,11 @@ def new_instruction(recipe_id, number, content):
             (content, instruction_number, recipe_id)
             VALUES (?, ?, ?)"""
     db.execute(sql, [content, number, recipe_id])
+    db.commit()
+
+
+def delete_instruction(id):
+    db = database.get_db()
+    sql = "DELETE FROM RecipeInstructions WHERE id = ?"
+    db.execute(sql, [id])
     db.commit()

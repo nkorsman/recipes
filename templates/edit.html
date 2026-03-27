@@ -25,9 +25,21 @@
 
         <h3>Ingredients</h3>
         <ul>
-            {% for ingredient in ingredients %}
-            <li>{{ ingredient.content }}</li>
-            {% endfor %}
+            <form action="/delete-ingredient" method="post">
+                <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+                {% for ingredient in ingredients %}
+                <li>
+                    {{ ingredient.content }}
+                    <button
+                        type="submit"
+                        name="ingredient_id"
+                        value="{{ ingredient.id }}"
+                    >
+                        Delete
+                    </button>
+                </li>
+                {% endfor %}
+            </form>
             <li>
                 <form action="/create-ingredient" method="post">
                     <input
@@ -47,9 +59,21 @@
 
         <h3>Preparation</h3>
         <ol>
-            {% for instruction in instructions %}
-            <li>{{ instruction.content }}</li>
-            {% endfor %}
+            <form action="/delete-instruction" method="post">
+                <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+                {% for instruction in instructions %}
+                <li>
+                    {{ instruction.content }}
+                    <button
+                        type="submit"
+                        name="instruction_id"
+                        value="{{ instruction.id }}"
+                    >
+                        Delete
+                    </button>
+                </li>
+                {% endfor %}
+            </form>
             <li>
                 <form action="/create-instruction" method="post">
                     <input
@@ -71,6 +95,10 @@
 
         <form action="/recipe/{{ recipe.id }}">
             <input type="submit" value="Finish editing" />
+        </form>
+        <form action="/delete-recipe" method="post">
+            <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+            <input type="submit" value="Delete recipe" />
         </form>
     </body>
 </html>

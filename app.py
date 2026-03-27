@@ -91,6 +91,13 @@ def create_recipe():
     return redirect(f"/edit/{recipe_id}")
 
 
+@app.route("/delete-recipe", methods=["POST"])
+def delete_recipe():
+    id = request.form["recipe_id"]
+    recipe.delete_recipe(id)
+    return redirect("/")
+
+
 @app.route("/create-ingredient", methods=["POST"])
 def create_ingredient():
     recipe_id = request.form["recipe_id"]
@@ -102,6 +109,14 @@ def create_ingredient():
     return redirect(f"/edit/{recipe_id}")
 
 
+@app.route("/delete-ingredient", methods=["POST"])
+def delete_ingredient():
+    recipe_id = request.form["recipe_id"]
+    ingredient_id = request.form["ingredient_id"]
+    recipe.delete_ingredient(ingredient_id)
+    return redirect(f"/edit/{recipe_id}")
+
+
 @app.route("/create-instruction", methods=["POST"])
 def create_instruction():
     recipe_id = request.form["recipe_id"]
@@ -110,6 +125,14 @@ def create_instruction():
 
     recipe.new_instruction(recipe_id, instruction_number, content)
 
+    return redirect(f"/edit/{recipe_id}")
+
+
+@app.route("/delete-instruction", methods=["POST"])
+def delete_instruction():
+    recipe_id = request.form["recipe_id"]
+    instruction_id = request.form["instruction_id"]
+    recipe.delete_instruction(instruction_id)
     return redirect(f"/edit/{recipe_id}")
 
 
