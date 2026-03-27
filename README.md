@@ -2,7 +2,7 @@
 
 ## Features
 - [x] Users can create an account and log in
-- [ ] Users can add recipes with a title, ingredients and instructions.
+- [x] Users can add recipes with a title, ingredients and instructions.
 - [ ] Users can edit and delete their own recipes
 - [ ] Users can browse and view recipes added by any user
 - [ ] Recipes can be tagged with one or more categories.
@@ -12,10 +12,11 @@
 - [ ] Each user has a profile page that shows their recipes and information about the user
 
 ## Usage
-First set up the database
+First make sure Flask is installed.
+
+Then set up the database
 ```
-$ sqlite database.db
-sqlite> .read schema.sql
+$ sqlite3 database.db < schema.sql
 ```
 
 You can then run the app with
