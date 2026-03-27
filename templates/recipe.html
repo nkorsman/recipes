@@ -25,7 +25,12 @@
             {% endfor %}
         </ul>
 
-        <h3>Instructions</h3>
+        <h3>Preparation</h3>
+        <ol>
+            {% for instruction in instructions %}
+            <li>{{ instruction.content }}</li>
+            {% endfor %}
+        </ol>
 
         <form action="/edit/{{ recipe.id }}">
             <input type="submit" value="Edit recipe" />

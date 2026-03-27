@@ -39,7 +39,7 @@ def get_ingredients(recipe_id):
 def next_ingredient_number(recipe_id):
     sql = "SELECT MAX(ingredient_number) FROM RecipeIngredients WHERE recipe_id = ?"
     result = database.query_db(sql, [recipe_id], one=True)
-    if result is None:
+    if result is None or result[0] is None:
         return 1
 
     return result[0] + 1
@@ -50,5 +50,31 @@ def new_ingredient(recipe_id, number, content):
     sql = """INSERT INTO RecipeIngredients
              (content, ingredient_number, recipe_id)
              VALUES (?, ?, ?)"""
+    db.execute(sql, [content, number, recipe_id])
+    db.commit()
+
+
+def get_instructions(recipe_id):
+    sql = """SELECT id, content, instruction_number
+             FROM RecipeInstructions
+             WHERE recipe_id = ?
+             ORDER BY instruction_number"""
+    return database.query_db(sql, [recipe_id])
+
+
+def next_instruction_number(recipe_id):
+    sql = "SELECT MAX(instruction_number) FROM RecipeInstructions WHERE recipe_id = ?"
+    result = database.query_db(sql, [recipe_id], one=True)
+    if result is None or result[0] is None:
+        return 1
+
+    return result[0] + 1
+
+
+def new_instruction(recipe_id, number, content):
+    db = database.get_db()
+    sql = """INSERT INTO RecipeInstructions
+            (content, instruction_number, recipe_id)
+            VALUES (?, ?, ?)"""
     db.execute(sql, [content, number, recipe_id])
     db.commit()

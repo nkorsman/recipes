@@ -45,7 +45,29 @@
             </li>
         </ul>
 
-        <h3>Instructions</h3>
+        <h3>Preparation</h3>
+        <ol>
+            {% for instruction in instructions %}
+            <li>{{ instruction.content }}</li>
+            {% endfor %}
+            <li>
+                <form action="/create-instruction" method="post">
+                    <input
+                        type="hidden"
+                        name="recipe_id"
+                        value="{{ recipe.id }}"
+                    />
+                    <textarea
+                        name="content"
+                        rows="5"
+                        cols="20"
+                        placeholder="New recipe step"
+                    ></textarea>
+                    <br />
+                    <input type="submit" value="Add step" />
+                </form>
+            </li>
+        </ol>
 
         <form action="/recipe/{{ recipe.id }}">
             <input type="submit" value="Finish editing" />

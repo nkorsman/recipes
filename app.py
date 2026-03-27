@@ -102,14 +102,28 @@ def create_ingredient():
     return redirect(f"/edit/{recipe_id}")
 
 
+@app.route("/create-instruction", methods=["POST"])
+def create_instruction():
+    recipe_id = request.form["recipe_id"]
+    instruction_number = recipe.next_instruction_number(recipe_id)
+    content = request.form["content"]
+
+    recipe.new_instruction(recipe_id, instruction_number, content)
+
+    return redirect(f"/edit/{recipe_id}")
+
+
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
     if r is None:
         return "ERROR: Recipe not found"
     ingredients = recipe.get_ingredients(recipe_id)
+    instructions = recipe.get_instructions(recipe_id)
 
-    return render_template("recipe.html", recipe=r, ingredients=ingredients)
+    return render_template(
+        "recipe.html", recipe=r, ingredients=ingredients, instructions=instructions
+    )
 
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
@@ -122,9 +136,8 @@ def edit_recipe(recipe_id):
     if r is None:
         return "ERROR: Recipe not found"
     ingredients = recipe.get_ingredients(recipe_id)
+    instructions = recipe.get_instructions(recipe_id)
 
     return render_template(
-        "edit.html",
-        recipe=r,
-        ingredients=ingredients,
+        "edit.html", recipe=r, ingredients=ingredients, instructions=instructions
     )
