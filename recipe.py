@@ -13,6 +13,15 @@ def get_recipe(id):
     return database.query_db(sql, [id], one=True)
 
 
+def get_recipe_author(id):
+    sql = "SELECT author_id FROM recipes WHERE id = ?"
+    result = database.query_db(sql, [id], one=True)
+    if result is None:
+        return None
+
+    return result[0]
+
+
 def new_recipe(author_id, title):
     db = database.get_db()
     sql = "INSERT INTO Recipes (title, author_id) VALUES (?, ?)"

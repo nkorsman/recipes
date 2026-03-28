@@ -101,8 +101,14 @@ def create_recipe():
 @app.route("/delete-recipe", methods=["POST"])
 @login_required
 def delete_recipe():
-    id = request.form["recipe_id"]
-    recipe.delete_recipe(id)
+    recipe_id = request.form["recipe_id"]
+    author_id = recipe.get_recipe_author(recipe_id)
+    if author_id is None:
+        return "ERROR: Recipe does not exist"
+    if author_id != session["user_id"]:
+        return "ERROR: You do not have permission to perform this action"
+
+    recipe.delete_recipe(recipe_id)
     return redirect("/")
 
 
@@ -110,9 +116,14 @@ def delete_recipe():
 @login_required
 def create_ingredient():
     recipe_id = request.form["recipe_id"]
+    author_id = recipe.get_recipe_author(recipe_id)
+    if author_id is None:
+        return "ERROR: Recipe does not exist"
+    if author_id != session["user_id"]:
+        return "ERROR: You do not have permission to perform this action"
+
     ingredient_number = recipe.next_ingredient_number(recipe_id)
     content = request.form["content"]
-
     recipe.new_ingredient(recipe_id, ingredient_number, content)
 
     return redirect(f"/edit/{recipe_id}")
@@ -122,8 +133,15 @@ def create_ingredient():
 @login_required
 def delete_ingredient():
     recipe_id = request.form["recipe_id"]
+    author_id = recipe.get_recipe_author(recipe_id)
+    if author_id is None:
+        return "ERROR: Recipe does not exist"
+    if author_id != session["user_id"]:
+        return "ERROR: You do not have permission to perform this action"
+
     ingredient_id = request.form["ingredient_id"]
     recipe.delete_ingredient(ingredient_id)
+
     return redirect(f"/edit/{recipe_id}")
 
 
@@ -131,9 +149,14 @@ def delete_ingredient():
 @login_required
 def create_instruction():
     recipe_id = request.form["recipe_id"]
+    author_id = recipe.get_recipe_author(recipe_id)
+    if author_id is None:
+        return "ERROR: Recipe does not exist"
+    if author_id != session["user_id"]:
+        return "ERROR: You do not have permission to perform this action"
+
     instruction_number = recipe.next_instruction_number(recipe_id)
     content = request.form["content"]
-
     recipe.new_instruction(recipe_id, instruction_number, content)
 
     return redirect(f"/edit/{recipe_id}")
@@ -143,8 +166,15 @@ def create_instruction():
 @login_required
 def delete_instruction():
     recipe_id = request.form["recipe_id"]
+    author_id = recipe.get_recipe_author(recipe_id)
+    if author_id is None:
+        return "ERROR: Recipe does not exist"
+    if author_id != session["user_id"]:
+        return "ERROR: You do not have permission to perform this action"
+
     instruction_id = request.form["instruction_id"]
     recipe.delete_instruction(instruction_id)
+
     return redirect(f"/edit/{recipe_id}")
 
 
@@ -164,13 +194,17 @@ def show_recipe(recipe_id):
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
 @login_required
 def edit_recipe(recipe_id):
+    author_id = recipe.get_recipe_author(recipe_id)
+    if author_id is None:
+        return "ERROR: Recipe does not exist"
+    if author_id != session["user_id"]:
+        return "ERROR: You do not have permission to perform this action"
+
     if request.method == "POST":
         title = request.form["title"]
         recipe.update_recipe(recipe_id, title)
 
     r = recipe.get_recipe(recipe_id)
-    if r is None:
-        return "ERROR: Recipe not found"
     ingredients = recipe.get_ingredients(recipe_id)
     instructions = recipe.get_instructions(recipe_id)
 
