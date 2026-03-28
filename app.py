@@ -1,4 +1,5 @@
 import sqlite3
+from functools import wraps
 
 from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -10,6 +11,16 @@ import recipe
 app = Flask(__name__)
 app.teardown_appcontext(database.close_db)
 app.secret_key = config.secret_key
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user_id" not in session:
+            return "ERROR: You are not logged in"
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 @app.route("/")
@@ -31,23 +42,25 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    sql = "SELECT password_hash FROM Users WHERE username = ?"
+    sql = "SELECT id, password_hash FROM Users WHERE username = ?"
     row = database.query_db(sql, [username], one=True)
     if row is None:
         return "ERROR: incorrect username or password"
 
-    password_hash = row[0]
+    user_id = row[0]
+    password_hash = row[1]
 
     if check_password_hash(password_hash, password):
-        session["username"] = username
+        session["user_id"] = user_id
         return redirect("/")
 
     return "ERROR: incorrect username or password"
 
 
 @app.route("/logout")
+@login_required
 def logout():
-    del session["username"]
+    del session["user_id"]
     return redirect("/")
 
 
@@ -75,15 +88,9 @@ def create_user():
 
 
 @app.route("/create-recipe")
+@login_required
 def create_recipe():
-    username = session["username"]
-
-    sql = "SELECT id FROM Users WHERE username = ?"
-    row = database.query_db(sql, [username], one=True)
-    if row is None:
-        return "ERROR: User not found"
-
-    author_id = row[0]
+    author_id = session["user_id"]
     title = "Untitled recipe"
 
     recipe_id = recipe.new_recipe(author_id, title)
@@ -92,6 +99,7 @@ def create_recipe():
 
 
 @app.route("/delete-recipe", methods=["POST"])
+@login_required
 def delete_recipe():
     id = request.form["recipe_id"]
     recipe.delete_recipe(id)
@@ -99,6 +107,7 @@ def delete_recipe():
 
 
 @app.route("/create-ingredient", methods=["POST"])
+@login_required
 def create_ingredient():
     recipe_id = request.form["recipe_id"]
     ingredient_number = recipe.next_ingredient_number(recipe_id)
@@ -110,6 +119,7 @@ def create_ingredient():
 
 
 @app.route("/delete-ingredient", methods=["POST"])
+@login_required
 def delete_ingredient():
     recipe_id = request.form["recipe_id"]
     ingredient_id = request.form["ingredient_id"]
@@ -118,6 +128,7 @@ def delete_ingredient():
 
 
 @app.route("/create-instruction", methods=["POST"])
+@login_required
 def create_instruction():
     recipe_id = request.form["recipe_id"]
     instruction_number = recipe.next_instruction_number(recipe_id)
@@ -129,6 +140,7 @@ def create_instruction():
 
 
 @app.route("/delete-instruction", methods=["POST"])
+@login_required
 def delete_instruction():
     recipe_id = request.form["recipe_id"]
     instruction_id = request.form["instruction_id"]
@@ -150,6 +162,7 @@ def show_recipe(recipe_id):
 
 
 @app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
+@login_required
 def edit_recipe(recipe_id):
     if request.method == "POST":
         title = request.form["title"]
