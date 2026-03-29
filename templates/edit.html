@@ -18,7 +18,13 @@
         <hr />
         <h2>{{ recipe.title }}</h2>
         <form method="post">
-            <input type="text" name="title" placeholder="New recipe title" />
+            <input
+                type="text"
+                name="title"
+                placeholder="New recipe title"
+                maxlength="100"
+                required
+            />
             <input type="submit" value="Rename" />
         </form>
 
@@ -50,6 +56,8 @@
                         type="text"
                         name="content"
                         placeholder="New ingredient"
+                        maxlength="100"
+                        required
                     />
                     <input type="submit" value="Add ingredient" />
                 </form>
@@ -85,6 +93,8 @@
                         rows="5"
                         cols="20"
                         placeholder="New recipe step"
+                        maxlength="2000"
+                        required
                     ></textarea>
                     <br />
                     <input type="submit" value="Add step" />

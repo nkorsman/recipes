@@ -66,12 +66,16 @@ def logout():
 
 @app.route("/create-user", methods=["POST"])
 def create_user():
-    username = request.form["username"]
+    username = request.form["username"].strip()
     password1 = request.form["password1"]
     password2 = request.form["password2"]
 
     if password1 != password2:
         return "ERROR: Passwords don't match"
+    if not username or len(username) > 40:
+        return "ERROR: invalid username"
+    if len(password1) < 8 or len(password1) > 100:
+        return "ERROR: invalid password"
 
     password_hash = generate_password_hash(password1)
     print(1)
@@ -122,8 +126,11 @@ def create_ingredient():
     if author_id != session["user_id"]:
         return "ERROR: You do not have permission to perform this action"
 
+    content = request.form["content"].strip()
+    if not content or len(content) > 100:
+        return "ERROR: invalid ingredient"
+
     ingredient_number = recipe.next_ingredient_number(recipe_id)
-    content = request.form["content"]
     recipe.new_ingredient(recipe_id, ingredient_number, content)
 
     return redirect(f"/edit/{recipe_id}")
@@ -155,8 +162,11 @@ def create_instruction():
     if author_id != session["user_id"]:
         return "ERROR: You do not have permission to perform this action"
 
+    content = request.form["content"].strip()
+    if not content or len(content) > 2000:
+        return "ERROR: invalid instruction step"
+
     instruction_number = recipe.next_instruction_number(recipe_id)
-    content = request.form["content"]
     recipe.new_instruction(recipe_id, instruction_number, content)
 
     return redirect(f"/edit/{recipe_id}")
@@ -201,7 +211,9 @@ def edit_recipe(recipe_id):
         return "ERROR: You do not have permission to perform this action"
 
     if request.method == "POST":
-        title = request.form["title"]
+        title = request.form["title"].strip()
+        if not title or len(title) > 100:
+            return "ERROR: Invalid recipe title"
         recipe.update_recipe(recipe_id, title)
 
     r = recipe.get_recipe(recipe_id)
