@@ -196,8 +196,18 @@ def show_recipe(recipe_id):
     ingredients = recipe.get_ingredients(recipe_id)
     instructions = recipe.get_instructions(recipe_id)
 
+    author = False
+    if "user_id" in session:
+        author_id = recipe.get_recipe_author(recipe_id)
+        if session["user_id"] == author_id:
+            author = True
+
     return render_template(
-        "recipe.html", recipe=r, ingredients=ingredients, instructions=instructions
+        "recipe.html",
+        recipe=r,
+        ingredients=ingredients,
+        instructions=instructions,
+        author=author,
     )
 
 

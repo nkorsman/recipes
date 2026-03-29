@@ -31,8 +31,10 @@
             {% endfor %}
         </ol>
 
+        {% if author %}
         <form action="/edit/{{ recipe.id }}">
             <input type="submit" value="Edit recipe" />
         </form>
+        {% endif %}
     </body>
 </html>
