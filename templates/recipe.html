@@ -1,40 +1,22 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Recipes</title>
-    </head>
-    <body>
-        <h1>Recipes</h1>
-        <p>
-            <a href="/">Home</a> | {%if session.user_id %}
-            <a href="/create-recipe">New recipe</a> |
-            <a href="/logout">Log out</a>
-            {% else %}
-            <a href="/login">Log in</a> |
-            <a href="/register">Register</a>
-            {% endif %}
-        </p>
-        <hr />
-        <h2>{{ recipe.title }}</h2>
+{% extends "layout.html" %} {% block content %}
+<h2>{{ recipe.title }}</h2>
 
-        <h3>Ingredients</h3>
-        <ul>
-            {% for ingredient in ingredients %}
-            <li>{{ ingredient.content }}</li>
-            {% endfor %}
-        </ul>
+<h3>Ingredients</h3>
+<ul>
+    {% for ingredient in ingredients %}
+    <li>{{ ingredient.content }}</li>
+    {% endfor %}
+</ul>
 
-        <h3>Preparation</h3>
-        <ol>
-            {% for instruction in instructions %}
-            <li>{{ instruction.content }}</li>
-            {% endfor %}
-        </ol>
+<h3>Preparation</h3>
+<ol>
+    {% for instruction in instructions %}
+    <li>{{ instruction.content }}</li>
+    {% endfor %}
+</ol>
 
-        {% if author %}
-        <form action="/edit/{{ recipe.id }}">
-            <input type="submit" value="Edit recipe" />
-        </form>
-        {% endif %}
-    </body>
-</html>
+{% if author %}
+<form action="/edit/{{ recipe.id }}">
+    <input type="submit" value="Edit recipe" />
+</form>
+{% endif %} {% endblock %}

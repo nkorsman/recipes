@@ -1,29 +1,11 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Recipes</title>
-    </head>
-
-    <body>
-        <h1>Recipes</h1>
-        <p>
-            <a href="/">Home</a> | {%if session.user_id %}
-            <a href="/create-recipe">New recipe</a> |
-            <a href="/logout">Log out</a>
-            {% else %}
-            <a href="/login">Log in</a> |
-            <a href="/register">Register</a>
-            {% endif %}
-        </p>
-        <hr />
-        <h2>All recipes</h2>
-        <ul>
-            {% for recipe in recipes %}
-            <li>
-                <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a> by
-                {{recipe.username}}
-            </li>
-            {% endfor %}
-        </ul>
-    </body>
-</html>
+{% extends "layout.html" %} {% block content %}
+<h2>All recipes</h2>
+<ul>
+    {% for recipe in recipes %}
+    <li>
+        <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a> by
+        {{recipe.username}}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

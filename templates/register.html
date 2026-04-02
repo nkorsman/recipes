@@ -1,46 +1,18 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Recipes</title>
-    </head>
-
-    <body>
-        <h1>Recipes</h1>
-        <p>
-            <a href="/">Home</a> | {%if session.user_id %}
-            <a href="/create-recipe">New recipe</a> |
-            <a href="/logout">Log out</a>
-            {% else %}
-            <a href="/login">Log in</a> |
-            <a href="/register">Register</a>
-            {% endif %}
-        </p>
-        <hr />
-        <h2>Register</h2>
-        <form action="/create-user" method="post">
-            <p>
-                Username: <br />
-                <input type="text" name="username" maxlength="40" required />
-            </p>
-            <p>
-                Password: <br />
-                <input
-                    type="password"
-                    name="password1"
-                    maxlength="100"
-                    required
-                />
-            </p>
-            <p>
-                Password again: <br />
-                <input
-                    type="password"
-                    name="password2"
-                    maxlength="100"
-                    required
-                />
-            </p>
-            <input type="submit" value="Create account" />
-        </form>
-    </body>
-</html>
+{% extends "layout.html" %} {% block content %}
+<h2>Register</h2>
+<form action="/create-user" method="post">
+    <p>
+        Username: <br />
+        <input type="text" name="username" maxlength="40" required />
+    </p>
+    <p>
+        Password: <br />
+        <input type="password" name="password1" maxlength="100" required />
+    </p>
+    <p>
+        Password again: <br />
+        <input type="password" name="password2" maxlength="100" required />
+    </p>
+    <input type="submit" value="Create account" />
+</form>
+{% endblock %}
