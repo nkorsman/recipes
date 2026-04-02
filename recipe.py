@@ -39,16 +39,8 @@ def update_recipe(id, title):
 
 def delete_recipe(id):
     db = database.get_db()
-
-    sql = "DELETE FROM RecipeIngredients WHERE recipe_id = ?"
-    db.execute(sql, [id])
-
-    sql = "DELETE FROM RecipeInstructions WHERE recipe_id = ?"
-    db.execute(sql, [id])
-
     sql = "DELETE FROM Recipes WHERE id = ?"
     db.execute(sql, [id])
-
     db.commit()
 
 
