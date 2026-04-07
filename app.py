@@ -75,10 +75,9 @@ def create_user():
     if not username or len(username) > 40:
         return "ERROR: invalid username"
     if len(password1) < 8 or len(password1) > 100:
-        return "ERROR: invalid password"
+        return "ERROR: Password must be at least 8 characters"
 
     password_hash = generate_password_hash(password1)
-    print(1)
 
     try:
         db = database.get_db()
