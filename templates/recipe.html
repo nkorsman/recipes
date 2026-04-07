@@ -16,7 +16,5 @@
 </ol>
 
 {% if author %}
-<form action="/edit/{{ recipe.id }}">
-    <input type="submit" value="Edit recipe" />
-</form>
+<a href="/recipe/{{ recipe.id }}/edit">Edit recipe</a>
 {% endif %} {% endblock %}

@@ -1,87 +1,71 @@
 {% extends "layout.html" %} {% block content %}
-<h2>{{ recipe.title }}</h2>
+
 <form method="post">
+    <h2>{{ recipe.title }}</h2>
     <input
         type="text"
         name="title"
         placeholder="New recipe title"
         maxlength="100"
-        required
     />
-    <input type="submit" value="Rename" />
-</form>
-
-<h3>Ingredients</h3>
-<ul>
-    <form action="/delete-ingredient" method="post">
-        <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+    <button type="submit" name="action" value="rename">Rename recipe</button>
+    <h3>Ingredients</h3>
+    <ul>
         {% for ingredient in ingredients %}
         <li>
             {{ ingredient.content }}
             <button
                 type="submit"
-                name="ingredient_id"
-                value="{{ ingredient.id }}"
+                name="action"
+                value="remove_ingredient:{{ ingredient.id }}"
             >
-                Delete
+                Remove
             </button>
         </li>
         {% endfor %}
-    </form>
-    <li>
-        <form action="/create-ingredient" method="post">
-            <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
-            <input
-                type="text"
-                name="content"
-                placeholder="New ingredient"
-                maxlength="100"
-                required
-            />
-            <input type="submit" value="Add ingredient" />
-        </form>
-    </li>
-</ul>
-
-<h3>Preparation</h3>
-<ol>
-    <form action="/delete-instruction" method="post">
-        <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+        <input
+            type="text"
+            name="ingredient_content"
+            placeholder="New ingredient"
+            maxlength="100"
+        />
+        <button type="submit" name="action" value="add_ingredient">
+            Add ingredient
+        </button>
+    </ul>
+    <h3>Preparation</h3>
+    <ol>
         {% for instruction in instructions %}
         <li>
             {{ instruction.content }}
             <button
                 type="submit"
-                name="instruction_id"
-                value="{{ instruction.id }}"
+                name="action"
+                value="remove_instruction:{{ instruction.id }}"
             >
-                Delete
+                Remove
             </button>
         </li>
         {% endfor %}
-    </form>
-    <li>
-        <form action="/create-instruction" method="post">
-            <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+        <li>
             <textarea
-                name="content"
+                name="instruction_content"
                 rows="5"
                 cols="20"
                 placeholder="New recipe step"
                 maxlength="2000"
-                required
             ></textarea>
             <br />
-            <input type="submit" value="Add step" />
-        </form>
-    </li>
-</ol>
+            <button type="submit" name="action" value="add_instruction">
+                Add step
+            </button>
+        </li>
+    </ol>
+</form>
 
-<form action="/recipe/{{ recipe.id }}">
-    <input type="submit" value="Finish editing" />
+<form method="post" action="/recipe/{{recipe.id}}/delete">
+    <button type="submit" name="action" value="delete">Delete recipe</button>
 </form>
-<form action="/delete-recipe" method="post">
-    <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
-    <input type="submit" value="Delete recipe" />
-</form>
+
+<a href="/recipe/{{ recipe.id }}">View recipe</a>
 {% endblock %}

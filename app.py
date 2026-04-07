@@ -98,93 +98,7 @@ def create_recipe():
 
     recipe_id = recipe.new_recipe(author_id, title)
 
-    return redirect(f"/edit/{recipe_id}")
-
-
-@app.route("/delete-recipe", methods=["POST"])
-@login_required
-def delete_recipe():
-    recipe_id = request.form["recipe_id"]
-    author_id = recipe.get_recipe_author(recipe_id)
-    if author_id is None:
-        return "ERROR: Recipe does not exist"
-    if author_id != session["user_id"]:
-        return "ERROR: You do not have permission to perform this action"
-
-    recipe.delete_recipe(recipe_id)
-    return redirect("/")
-
-
-@app.route("/create-ingredient", methods=["POST"])
-@login_required
-def create_ingredient():
-    recipe_id = request.form["recipe_id"]
-    author_id = recipe.get_recipe_author(recipe_id)
-    if author_id is None:
-        return "ERROR: Recipe does not exist"
-    if author_id != session["user_id"]:
-        return "ERROR: You do not have permission to perform this action"
-
-    content = request.form["content"].strip()
-    if not content or len(content) > 100:
-        return "ERROR: invalid ingredient"
-
-    ingredient_number = recipe.next_ingredient_number(recipe_id)
-    recipe.new_ingredient(recipe_id, ingredient_number, content)
-
-    return redirect(f"/edit/{recipe_id}")
-
-
-@app.route("/delete-ingredient", methods=["POST"])
-@login_required
-def delete_ingredient():
-    recipe_id = request.form["recipe_id"]
-    author_id = recipe.get_recipe_author(recipe_id)
-    if author_id is None:
-        return "ERROR: Recipe does not exist"
-    if author_id != session["user_id"]:
-        return "ERROR: You do not have permission to perform this action"
-
-    ingredient_id = request.form["ingredient_id"]
-    recipe.delete_ingredient(ingredient_id)
-
-    return redirect(f"/edit/{recipe_id}")
-
-
-@app.route("/create-instruction", methods=["POST"])
-@login_required
-def create_instruction():
-    recipe_id = request.form["recipe_id"]
-    author_id = recipe.get_recipe_author(recipe_id)
-    if author_id is None:
-        return "ERROR: Recipe does not exist"
-    if author_id != session["user_id"]:
-        return "ERROR: You do not have permission to perform this action"
-
-    content = request.form["content"].strip()
-    if not content or len(content) > 2000:
-        return "ERROR: invalid instruction step"
-
-    instruction_number = recipe.next_instruction_number(recipe_id)
-    recipe.new_instruction(recipe_id, instruction_number, content)
-
-    return redirect(f"/edit/{recipe_id}")
-
-
-@app.route("/delete-instruction", methods=["POST"])
-@login_required
-def delete_instruction():
-    recipe_id = request.form["recipe_id"]
-    author_id = recipe.get_recipe_author(recipe_id)
-    if author_id is None:
-        return "ERROR: Recipe does not exist"
-    if author_id != session["user_id"]:
-        return "ERROR: You do not have permission to perform this action"
-
-    instruction_id = request.form["instruction_id"]
-    recipe.delete_instruction(instruction_id)
-
-    return redirect(f"/edit/{recipe_id}")
+    return redirect(f"/recipe/{recipe_id}/edit")
 
 
 @app.route("/recipe/<int:recipe_id>")
@@ -210,20 +124,14 @@ def show_recipe(recipe_id):
     )
 
 
-@app.route("/edit/<int:recipe_id>", methods=["GET", "POST"])
+@app.route("/recipe/<int:recipe_id>/edit", methods=["GET"])
 @login_required
-def edit_recipe(recipe_id):
+def show_recipe_editpage(recipe_id):
     author_id = recipe.get_recipe_author(recipe_id)
     if author_id is None:
         return "ERROR: Recipe does not exist"
     if author_id != session["user_id"]:
         return "ERROR: You do not have permission to perform this action"
-
-    if request.method == "POST":
-        title = request.form["title"].strip()
-        if not title or len(title) > 100:
-            return "ERROR: Invalid recipe title"
-        recipe.update_recipe(recipe_id, title)
 
     r = recipe.get_recipe(recipe_id)
     ingredients = recipe.get_ingredients(recipe_id)
@@ -232,3 +140,57 @@ def edit_recipe(recipe_id):
     return render_template(
         "edit.html", recipe=r, ingredients=ingredients, instructions=instructions
     )
+
+
+@app.route("/recipe/<int:recipe_id>/edit", methods=["POST"])
+@login_required
+def edit_recipe(recipe_id):
+    author_id = recipe.get_recipe_author(recipe_id)
+    if author_id is None:
+        return "ERROR: Recipe does not exist"
+    if author_id != session["user_id"]:
+        return "ERROR: You do not have permission to edit this recipe"
+
+    parts = request.form["action"].split(":")
+    action = parts[0]
+    item_id = parts[1] if len(parts) == 2 else None
+
+    if action == "rename":
+        title = request.form["title"].strip()
+        if not title or len(title) > 100:
+            return "ERROR: Invalid recipe title"
+        recipe.update_recipe(recipe_id, title)
+
+    elif action == "add_ingredient":
+        content = request.form["ingredient_content"].strip()
+        if not content or len(content) > 100:
+            return "ERROR: invalid ingredient"
+        recipe.new_ingredient(recipe_id, content)
+
+    elif action == "remove_ingredient":
+        recipe.delete_ingredient(item_id)
+
+    elif action == "add_instruction":
+        content = request.form["instruction_content"].strip()
+        if not content or len(content) > 2000:
+            return "ERROR: invalid instruction step"
+        recipe.new_instruction(recipe_id, content)
+
+    elif action == "remove_instruction":
+        recipe.delete_instruction(item_id)
+
+    return redirect(f"/recipe/{recipe_id}/edit")
+
+
+@app.route("/recipe/<int:recipe_id>/delete", methods=["POST"])
+@login_required
+def delete_recipe(recipe_id):
+    author_id = recipe.get_recipe_author(recipe_id)
+    if author_id is None:
+        return "ERROR: Recipe does not exist"
+    if author_id != session["user_id"]:
+        return "ERROR: You do not have permission to delete this recipe"
+
+    recipe.delete_recipe(recipe_id)
+
+    return redirect("/")

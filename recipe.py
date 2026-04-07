@@ -61,7 +61,8 @@ def next_ingredient_number(recipe_id):
     return result[0] + 1
 
 
-def new_ingredient(recipe_id, number, content):
+def new_ingredient(recipe_id, content):
+    number = next_ingredient_number(recipe_id)
     db = database.get_db()
     sql = """INSERT INTO RecipeIngredients
              (content, ingredient_number, recipe_id)
@@ -94,7 +95,8 @@ def next_instruction_number(recipe_id):
     return result[0] + 1
 
 
-def new_instruction(recipe_id, number, content):
+def new_instruction(recipe_id, content):
+    number = next_instruction_number(recipe_id)
     db = database.get_db()
     sql = """INSERT INTO RecipeInstructions
             (content, instruction_number, recipe_id)
