@@ -1,7 +1,6 @@
 from functools import wraps
 
 from flask import Flask, redirect, render_template, request, session
-from werkzeug.security import check_password_hash
 
 import config
 import database
@@ -64,19 +63,13 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    sql = "SELECT id, password_hash FROM Users WHERE username = ?"
-    row = database.query_db(sql, [username], one=True)
-    if row is None:
-        return "ERROR: incorrect username or password"
+    user_id = user.get_user_id(username)
 
-    user_id = row[0]
-    password_hash = row[1]
-
-    if check_password_hash(password_hash, password):
+    if user.check_password(user_id, password):
         session["user_id"] = user_id
         return redirect("/")
 
-    return "ERROR: incorrect username or password"
+    return "ERROR: Username or password is incorrect"
 
 
 @app.route("/logout")
