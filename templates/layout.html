@@ -7,7 +7,7 @@
     <body>
         <h1>Recipes</h1>
         <p>
-            <a href="/">Home</a> | {%if session.user_id %}
+            <a href="/">Home</a> | {% if session.user_id %}
             <a href="/new">New recipe</a> |
             <a href="/logout">Log out</a>
             {% else %}
@@ -16,6 +16,15 @@
             {% endif %}
         </p>
         <hr />
-        {% block content %}{% endblock %}
+        {% for category, message in get_flashed_messages(with_categories=true)
+        %} {% if category == "error" %}
+        <p>
+            <b>ERROR: {{ message }}</b>
+        </p>
+        {% else %}
+        <p>
+            <b>{{ message }}</b>
+        </p>
+        {% endif %} {% endfor %} {% block content %}{% endblock %}
     </body>
 </html>

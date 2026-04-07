@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, abort, flash, redirect, render_template, request, session
 
 import config
 import database
@@ -16,10 +16,17 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if "user_id" not in session:
-            return "ERROR: You are not logged in"
+            return abort(401, "You must be logged in to perform this action.")
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+@app.errorhandler(404)
+@app.errorhandler(403)
+@app.errorhandler(401)
+def error(e):
+    return render_template("error.html", error=e)
 
 
 @app.route("/")
@@ -31,7 +38,7 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if "user_id" in session:
-        return "ERROR: You must log out first before you can register"
+        abort(403, "You must log out first before you can register a new account.")
 
     if request.method == "GET":
         return render_template("register.html")
@@ -41,16 +48,21 @@ def register():
     password2 = request.form["password2"]
 
     if password1 != password2:
-        return "ERROR: Passwords don't match"
+        flash("The passwords you have entered don't match", "error")
+        return redirect("/register")
     if not username or len(username) > 40:
-        return "ERROR: invalid username"
+        flash("Username must be between 1 and 40 characters", "error")
+        return redirect("/register")
     if len(password1) < 8 or len(password1) > 100:
-        return "ERROR: Password must be at least 8 characters"
+        flash("Password must be at least 8 characters", "error")
+        return redirect("/register")
 
     user_id = user.new_user(username, password1)
     if not user_id:
-        return "ERROR: Username already taken"
+        flash("Username is already taken", "error")
+        return redirect("/register")
 
+    flash(f"User {username} successfully created", "success")
     session["user_id"] = user_id
     return redirect("/")
 
@@ -69,7 +81,8 @@ def login():
         session["user_id"] = user_id
         return redirect("/")
 
-    return "ERROR: Username or password is incorrect"
+    flash("Username or password is incorrect.", "error")
+    return redirect("/login")
 
 
 @app.route("/logout")
@@ -88,7 +101,7 @@ def new_recipe():
     author_id = session["user_id"]
     title = request.form["title"].strip()
     if not title or len(title) > 100:
-        return "ERROR: Invalid recipe title"
+        flash("Recipe title must be between 1 and 100 characters.", "error")
 
     recipe_id = recipe.new_recipe(author_id, title)
 
@@ -99,7 +112,7 @@ def new_recipe():
 def show_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
     if r is None:
-        return "ERROR: Recipe not found"
+        abort(404, "This recipe could not be found.")
     ingredients = recipe.get_ingredients(recipe_id)
     instructions = recipe.get_instructions(recipe_id)
 
@@ -123,9 +136,9 @@ def show_recipe(recipe_id):
 def show_recipe_editpage(recipe_id):
     author_id = recipe.get_recipe_author(recipe_id)
     if author_id is None:
-        return "ERROR: Recipe does not exist"
+        abort(404, "The recipe you're trying to edit could not be found.")
     if author_id != session["user_id"]:
-        return "ERROR: You do not have permission to perform this action"
+        abort(403, "You do not have permission to edit this recipe.")
 
     r = recipe.get_recipe(recipe_id)
     ingredients = recipe.get_ingredients(recipe_id)
@@ -141,9 +154,9 @@ def show_recipe_editpage(recipe_id):
 def edit_recipe(recipe_id):
     author_id = recipe.get_recipe_author(recipe_id)
     if author_id is None:
-        return "ERROR: Recipe does not exist"
+        abort(404, "The recipe you're trying to edit could not be found.")
     if author_id != session["user_id"]:
-        return "ERROR: You do not have permission to edit this recipe"
+        abort(403, "You do not have permission to edit this recipe.")
 
     parts = request.form["action"].split(":")
     action = parts[0]
@@ -152,14 +165,16 @@ def edit_recipe(recipe_id):
     if action == "rename":
         title = request.form["title"].strip()
         if not title or len(title) > 100:
-            return "ERROR: Invalid recipe title"
-        recipe.update_recipe(recipe_id, title)
+            flash("Recipe title must be between 1 and 100 characters.", "error")
+        else:
+            recipe.update_recipe(recipe_id, title)
 
     elif action == "add_ingredient":
         content = request.form["ingredient_content"].strip()
         if not content or len(content) > 100:
-            return "ERROR: invalid ingredient"
-        recipe.new_ingredient(recipe_id, content)
+            flash("Ingredient name must be between 1 and 100 characters.", "error")
+        else:
+            recipe.new_ingredient(recipe_id, content)
 
     elif action == "remove_ingredient":
         recipe.delete_ingredient(item_id)
@@ -167,8 +182,9 @@ def edit_recipe(recipe_id):
     elif action == "add_instruction":
         content = request.form["instruction_content"].strip()
         if not content or len(content) > 2000:
-            return "ERROR: invalid instruction step"
-        recipe.new_instruction(recipe_id, content)
+            flash("Recipe step must be between 1 and 2000 characters.", "error")
+        else:
+            recipe.new_instruction(recipe_id, content)
 
     elif action == "remove_instruction":
         recipe.delete_instruction(item_id)
@@ -181,9 +197,9 @@ def edit_recipe(recipe_id):
 def delete_recipe(recipe_id):
     author_id = recipe.get_recipe_author(recipe_id)
     if author_id is None:
-        return "ERROR: Recipe does not exist"
+        abort(404, "The recipe you're trying to edit could not be found.")
     if author_id != session["user_id"]:
-        return "ERROR: You do not have permission to delete this recipe"
+        abort(403, "You do not have permission to edit this recipe.")
 
     recipe.delete_recipe(recipe_id)
 
