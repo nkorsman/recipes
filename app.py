@@ -90,11 +90,16 @@ def create_user():
     return f"User {username} created"
 
 
-@app.route("/create-recipe")
+@app.route("/new", methods=["GET", "POST"])
 @login_required
-def create_recipe():
+def new_recipe():
+    if request.method == "GET":
+        return render_template("new.html")
+
     author_id = session["user_id"]
-    title = "Untitled recipe"
+    title = request.form["title"].strip()
+    if not title or len(title) > 100:
+        return "ERROR: Invalid recipe title"
 
     recipe_id = recipe.new_recipe(author_id, title)
 
