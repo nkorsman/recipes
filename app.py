@@ -1,12 +1,12 @@
-import sqlite3
 from functools import wraps
 
 from flask import Flask, redirect, render_template, request, session
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 
 import config
 import database
 import recipe
+import user
 
 app = Flask(__name__)
 app.teardown_appcontext(database.close_db)
@@ -29,9 +29,31 @@ def index():
     return render_template("index.html", recipes=recipes)
 
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    return render_template("register.html")
+    if "user_id" in session:
+        return "ERROR: You must log out first before you can register"
+
+    if request.method == "GET":
+        return render_template("register.html")
+
+    username = request.form["username"].strip()
+    password1 = request.form["password1"]
+    password2 = request.form["password2"]
+
+    if password1 != password2:
+        return "ERROR: Passwords don't match"
+    if not username or len(username) > 40:
+        return "ERROR: invalid username"
+    if len(password1) < 8 or len(password1) > 100:
+        return "ERROR: Password must be at least 8 characters"
+
+    user_id = user.new_user(username, password1)
+    if not user_id:
+        return "ERROR: Username already taken"
+
+    session["user_id"] = user_id
+    return redirect("/")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -62,32 +84,6 @@ def login():
 def logout():
     del session["user_id"]
     return redirect("/")
-
-
-@app.route("/create-user", methods=["POST"])
-def create_user():
-    username = request.form["username"].strip()
-    password1 = request.form["password1"]
-    password2 = request.form["password2"]
-
-    if password1 != password2:
-        return "ERROR: Passwords don't match"
-    if not username or len(username) > 40:
-        return "ERROR: invalid username"
-    if len(password1) < 8 or len(password1) > 100:
-        return "ERROR: Password must be at least 8 characters"
-
-    password_hash = generate_password_hash(password1)
-
-    try:
-        db = database.get_db()
-        sql = "INSERT INTO Users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
-        db.commit()
-    except sqlite3.IntegrityError:
-        return "ERROR: Username taken"
-
-    return f"User {username} created"
 
 
 @app.route("/new", methods=["GET", "POST"])
