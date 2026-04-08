@@ -1,4 +1,5 @@
 import database
+import recipe
 
 
 def get_tag(id):
@@ -8,13 +9,7 @@ def get_tag(id):
         return None
 
     tag = {"id": id, "name": result[0]}
-
-    sql = """SELECT R.id, R.title, U.username
-            FROM Recipes R
-            JOIN Users U ON R.author_id = U.id
-            JOIN RecipeTags T ON R.id = T.recipe_id
-            WHERE T.tag_id = ?"""
-    tag["recipes"] = database.query_db(sql, [id])
+    tag["recipes"] = recipe.get_recipes(id)
 
     return tag
 

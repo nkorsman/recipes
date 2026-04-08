@@ -1,10 +1,15 @@
 import database
 
 
-def get_recipes():
+def get_recipes(tag=None):
     sql = """SELECT R.id, R.title, U.username
-             FROM Recipes R, Users U
-             WHERE R.author_id = U.id"""
+             FROM Recipes R
+             JOIN Users U ON U.id = R.author_id"""
+    if tag:
+        sql += """\nJOIN RecipeTags T ON T.recipe_id = R.id
+                    WHERE T.tag_id = ?"""
+        return database.query_db(sql, [tag])
+
     return database.query_db(sql)
 
 
