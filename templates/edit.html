@@ -9,7 +9,15 @@
         maxlength="100"
     />
     <button type="submit" name="action" value="rename">Rename recipe</button>
-    <p>Tags: {% for tag in recipe.tags %} {{ tag.name }} {% endfor %}</p>
+    <p>
+        Tags: {% for tag in recipe.tags %} {{ tag.name }} (<button
+            type="submit"
+            name="action"
+            value="untag:{{ tag.id }}"
+        >
+            Delete</button
+        >) {% endfor %}
+    </p>
     <input
         type="text"
         name="tag_name"

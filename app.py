@@ -149,8 +149,13 @@ def edit_recipe(recipe_id):
 
     elif action == "tag":
         content, errors = tag.parse_tag(request.form["tag_name"])
+        if content in [tag["name"] for tag in r["tags"]]:
+            errors.append("Recipe already has this tag")
         if not errors:
             tag.tag_recipe(recipe_id, content)
+
+    elif action == "untag":
+        tag.untag_recipe(recipe_id, item_id)
 
     elif action == "add_ingredient":
         content, errors = recipe.parse_ingredient(request.form["ingredient_content"])

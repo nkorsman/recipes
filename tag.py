@@ -47,3 +47,18 @@ def tag_recipe(recipe_id, tag_name):
     sql = "INSERT INTO RecipeTags (recipe_id, tag_id) VALUES (?, ?)"
     db.execute(sql, [recipe_id, tag_id])
     db.commit()
+
+
+def untag_recipe(recipe_id, tag_id):
+    db = database.get_db()
+
+    sql = "DELETE FROM RecipeTags WHERE recipe_id = ? AND tag_id = ?"
+    db.execute(sql, [recipe_id, tag_id])
+
+    sql = "SELECT id FROM Tags WHERE id = ?"
+    remaining = database.query_db(sql, [tag_id], one=True)
+    if not remaining:
+        sql = "DELETE FROM Tags WHERE id = ?"
+        db.execute(sql, [tag_id])
+
+    db.commit()

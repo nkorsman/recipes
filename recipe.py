@@ -28,7 +28,7 @@ def get_recipe(recipe_id):
              ORDER BY instruction_number"""
     recipe["instructions"] = database.query_db(sql, [recipe_id])
 
-    sql = "SELECT T.name FROM Tags T, RecipeTags R WHERE R.recipe_id = ? AND T.id = R.tag_id"
+    sql = "SELECT T.id, T.name FROM Tags T, RecipeTags R WHERE R.recipe_id = ? AND T.id = R.tag_id"
     recipe["tags"] = database.query_db(sql, [recipe_id])
 
     return recipe
