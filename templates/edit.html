@@ -9,7 +9,7 @@
         maxlength="100"
     />
     <button type="submit" name="action" value="rename">Rename recipe</button>
-    <p>Tags: {% for tag in tags %} {{ tag.name }} {% endfor %}</p>
+    <p>Tags: {% for tag in recipe.tags %} {{ tag.name }} {% endfor %}</p>
     <input
         type="text"
         name="tag_name"
@@ -19,7 +19,7 @@
     <button type="submit" name="action" value="tag">Add tag</button>
     <h3>Ingredients</h3>
     <ul>
-        {% for ingredient in ingredients %}
+        {% for ingredient in recipe.ingredients %}
         <li>
             {{ ingredient.content }}
             <button
@@ -43,7 +43,7 @@
     </ul>
     <h3>Preparation</h3>
     <ol>
-        {% for instruction in instructions %}
+        {% for instruction in recipe.instructions %}
         <li>
             {{ instruction.content }}
             <button

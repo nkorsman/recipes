@@ -1,22 +1,22 @@
 {% extends "layout.html" %} {% block content %}
 <h2>{{ recipe.title }}</h2>
 
-<p>Tags: {% for tag in tags %} {{ tag.name }} {% endfor %}</p>
+<p>Tags: {% for tag in recipe.tags %} {{ tag.name }} {% endfor %}</p>
 
 <h3>Ingredients</h3>
 <ul>
-    {% for ingredient in ingredients %}
+    {% for ingredient in recipe.ingredients %}
     <li>{{ ingredient.content }}</li>
     {% endfor %}
 </ul>
 
 <h3>Preparation</h3>
 <ol>
-    {% for instruction in instructions %}
+    {% for instruction in recipe.instructions %}
     <li>{{ instruction.content }}</li>
     {% endfor %}
 </ol>
 
-{% if author %}
+{% if is_author %}
 <a href="/recipe/{{ recipe.id }}/edit">Edit recipe</a>
 {% endif %} {% endblock %}

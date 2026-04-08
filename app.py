@@ -114,51 +114,31 @@ def show_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
     if r is None:
         abort(404, "This recipe could not be found.")
-    ingredients = recipe.get_ingredients(recipe_id)
-    instructions = recipe.get_instructions(recipe_id)
-    tags = recipe.get_tags(recipe_id)
 
-    author = False
-    if "user_id" in session:
-        author_id = recipe.get_recipe_author(recipe_id)
-        if session["user_id"] == author_id:
-            author = True
+    is_author = True if r["author_id"] == session["user_id"] else False
 
-    return render_template(
-        "recipe.html",
-        recipe=r,
-        ingredients=ingredients,
-        instructions=instructions,
-        tags=tags,
-        author=author,
-    )
+    return render_template("recipe.html", recipe=r, is_author=is_author)
 
 
 @app.route("/recipe/<int:recipe_id>/edit", methods=["GET"])
 @login_required
 def show_recipe_editpage(recipe_id):
-    author_id = recipe.get_recipe_author(recipe_id)
-    if author_id is None:
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
         abort(404, "The recipe you're trying to edit could not be found.")
-    if author_id != session["user_id"]:
+    if r["author_id"] != session["user_id"]:
         abort(403, "You do not have permission to edit this recipe.")
 
-    r = recipe.get_recipe(recipe_id)
-    ingredients = recipe.get_ingredients(recipe_id)
-    instructions = recipe.get_instructions(recipe_id)
-
-    return render_template(
-        "edit.html", recipe=r, ingredients=ingredients, instructions=instructions
-    )
+    return render_template("edit.html", recipe=r)
 
 
 @app.route("/recipe/<int:recipe_id>/edit", methods=["POST"])
 @login_required
 def edit_recipe(recipe_id):
-    author_id = recipe.get_recipe_author(recipe_id)
-    if author_id is None:
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
         abort(404, "The recipe you're trying to edit could not be found.")
-    if author_id != session["user_id"]:
+    if r["author_id"] != session["user_id"]:
         abort(403, "You do not have permission to edit this recipe.")
 
     parts = request.form["action"].split(":")
@@ -202,10 +182,10 @@ def edit_recipe(recipe_id):
 @app.route("/recipe/<int:recipe_id>/delete", methods=["POST"])
 @login_required
 def delete_recipe(recipe_id):
-    author_id = recipe.get_recipe_author(recipe_id)
-    if author_id is None:
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
         abort(404, "The recipe you're trying to edit could not be found.")
-    if author_id != session["user_id"]:
+    if r["author_id"] != session["user_id"]:
         abort(403, "You do not have permission to edit this recipe.")
 
     recipe.delete_recipe(recipe_id)

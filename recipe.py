@@ -8,18 +8,30 @@ def get_recipes():
     return database.query_db(sql)
 
 
-def get_recipe(id):
-    sql = "SELECT id, title FROM Recipes WHERE id = ?"
-    return database.query_db(sql, [id], one=True)
-
-
-def get_recipe_author(id):
-    sql = "SELECT author_id FROM recipes WHERE id = ?"
-    result = database.query_db(sql, [id], one=True)
+def get_recipe(recipe_id):
+    sql = "SELECT title, author_id FROM Recipes WHERE id = ?"
+    result = database.query_db(sql, [recipe_id], one=True)
     if result is None:
         return None
 
-    return result[0]
+    recipe = {"id": recipe_id, "title": result[0], "author_id": result[1]}
+
+    sql = """SELECT id, content, ingredient_number
+             FROM RecipeIngredients
+             WHERE recipe_id = ?
+             ORDER BY ingredient_number"""
+    recipe["ingredients"] = database.query_db(sql, [recipe_id])
+
+    sql = """SELECT id, content, instruction_number
+             FROM RecipeInstructions
+             WHERE recipe_id = ?
+             ORDER BY instruction_number"""
+    recipe["instructions"] = database.query_db(sql, [recipe_id])
+
+    sql = "SELECT T.name FROM Tags T, RecipeTags R WHERE R.recipe_id = ? AND T.id = R.tag_id"
+    recipe["tags"] = database.query_db(sql, [recipe_id])
+
+    return recipe
 
 
 def new_recipe(author_id, title):
@@ -42,14 +54,6 @@ def delete_recipe(id):
     sql = "DELETE FROM Recipes WHERE id = ?"
     db.execute(sql, [id])
     db.commit()
-
-
-def get_ingredients(recipe_id):
-    sql = """SELECT id, content, ingredient_number
-             FROM RecipeIngredients
-             WHERE recipe_id = ?
-             ORDER BY ingredient_number"""
-    return database.query_db(sql, [recipe_id])
 
 
 def next_ingredient_number(recipe_id):
@@ -78,14 +82,6 @@ def delete_ingredient(id):
     db.commit()
 
 
-def get_instructions(recipe_id):
-    sql = """SELECT id, content, instruction_number
-             FROM RecipeInstructions
-             WHERE recipe_id = ?
-             ORDER BY instruction_number"""
-    return database.query_db(sql, [recipe_id])
-
-
 def next_instruction_number(recipe_id):
     sql = "SELECT MAX(instruction_number) FROM RecipeInstructions WHERE recipe_id = ?"
     result = database.query_db(sql, [recipe_id], one=True)
@@ -110,8 +106,3 @@ def delete_instruction(id):
     sql = "DELETE FROM RecipeInstructions WHERE id = ?"
     db.execute(sql, [id])
     db.commit()
-
-
-def get_tags(recipe_id):
-    sql = "SELECT T.name FROM Tags T, RecipeTags R WHERE R.recipe_id = ? AND T.id = R.tag_id"
-    return database.query_db(sql, [recipe_id])
