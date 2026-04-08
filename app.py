@@ -5,6 +5,7 @@ from flask import Flask, abort, flash, redirect, render_template, request, sessi
 import config
 import database
 import recipe
+import tag
 import user
 
 app = Flask(__name__)
@@ -115,6 +116,7 @@ def show_recipe(recipe_id):
         abort(404, "This recipe could not be found.")
     ingredients = recipe.get_ingredients(recipe_id)
     instructions = recipe.get_instructions(recipe_id)
+    tags = recipe.get_tags(recipe_id)
 
     author = False
     if "user_id" in session:
@@ -127,6 +129,7 @@ def show_recipe(recipe_id):
         recipe=r,
         ingredients=ingredients,
         instructions=instructions,
+        tags=tags,
         author=author,
     )
 
@@ -169,6 +172,10 @@ def edit_recipe(recipe_id):
         else:
             recipe.update_recipe(recipe_id, title)
 
+    elif action == "tag":
+        name = request.form["tag_name"].strip().lower()
+        tag.tag_recipe(recipe_id, name)
+
     elif action == "add_ingredient":
         content = request.form["ingredient_content"].strip()
         if not content or len(content) > 100:
@@ -204,3 +211,16 @@ def delete_recipe(recipe_id):
     recipe.delete_recipe(recipe_id)
 
     return redirect("/")
+
+
+@app.route("/tag/<int:tag_id>")
+@app.route("/tag/<tag_name>")
+def show_tag(tag_id=None, tag_name=None):
+    if tag_name:
+        tag_id = tag.get_id(tag_name)
+
+    t = tag.get_tag(tag_id)
+    if t is None:
+        abort(404, "This tag could not be found.")
+
+    return render_template("tag.html", tag=t)

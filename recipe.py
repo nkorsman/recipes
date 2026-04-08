@@ -110,3 +110,8 @@ def delete_instruction(id):
     sql = "DELETE FROM RecipeInstructions WHERE id = ?"
     db.execute(sql, [id])
     db.commit()
+
+
+def get_tags(recipe_id):
+    sql = "SELECT T.name FROM Tags T, RecipeTags R WHERE R.recipe_id = ? AND T.id = R.tag_id"
+    return database.query_db(sql, [recipe_id])

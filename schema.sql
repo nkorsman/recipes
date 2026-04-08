@@ -10,6 +10,11 @@ CREATE TABLE Recipes (
     author_id INTEGER REFERENCES Users ON DELETE CASCADE
 );
 
+CREATE TABLE Tags (
+    id INTEGER PRIMARY KEY,
+    name TEXT
+);
+
 CREATE TABLE RecipeIngredients (
     id INTEGER PRIMARY KEY,
     content TEXT,
@@ -24,4 +29,16 @@ CREATE TABLE RecipeInstructions (
     instruction_number INTEGER,
     recipe_id INTEGER REFERENCES Recipes ON DELETE CASCADE,
     UNIQUE(recipe_id, instruction_number)
-)
+);
+
+CREATE TABLE RecipeTags (
+    id INTEGER PRIMARY KEY,
+    recipe_id INTEGER REFERENCES Recipes ON DELETE CASCADE,
+    tag_id INTEGER REFERENCES Tags ON DELETE CASCADE
+);
+
+CREATE TABLE UserFavorites (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES Users ON DELETE CASCADE,
+    recipe_id INTEGER REFERENCES Recipes ON DELETE CASCADE
+);
