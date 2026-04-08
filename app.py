@@ -107,7 +107,11 @@ def show_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
     if r is None:
         abort(404, "This recipe could not be found.")
-    is_author = True if r["author_id"] == session["user_id"] else False
+
+    if "user_id" in session:
+        is_author = session["user_id"] == r["author_id"]
+    else:
+        is_author = False
 
     return render_template("recipe.html", recipe=r, is_author=is_author)
 
