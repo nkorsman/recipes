@@ -40,32 +40,25 @@ def index():
 def register():
     if "user_id" in session:
         abort(403, "You must log out first before you can register a new account.")
-
     if request.method == "GET":
         return render_template("register.html")
 
-    username = request.form["username"].strip()
+    username, errors = user.parse_username(request.form["username"])
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+    errors += user.validate_password(password1, password2)
 
-    if password1 != password2:
-        flash("The passwords you have entered don't match", "error")
-        return redirect("/register")
-    if not username or len(username) > 40:
-        flash("Username must be between 1 and 40 characters", "error")
-        return redirect("/register")
-    if len(password1) < 8 or len(password1) > 100:
-        flash("Password must be at least 8 characters", "error")
-        return redirect("/register")
+    if not errors:
+        user_id = user.new_user(username, password1)
+        if user_id:
+            flash(f"User {username} succesfully created", "success")
+            session["user_id"] = user_id
+            return redirect("/")
+        errors.append("Username is already taken")
 
-    user_id = user.new_user(username, password1)
-    if not user_id:
-        flash("Username is already taken", "error")
-        return redirect("/register")
-
-    flash(f"User {username} successfully created", "success")
-    session["user_id"] = user_id
-    return redirect("/")
+    for error in errors:
+        flash(error, "error")
+    return redirect("/register")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -75,15 +68,14 @@ def login():
 
     username = request.form["username"]
     password = request.form["password"]
-
     user_id = user.get_user_id(username)
 
-    if user.check_password(user_id, password):
-        session["user_id"] = user_id
-        return redirect("/")
+    if not user.check_password(user_id, password):
+        flash("Username or password is incorrect.", "error")
+        return redirect("/login")
 
-    flash("Username or password is incorrect.", "error")
-    return redirect("/login")
+    session["user_id"] = user_id
+    return redirect("/")
 
 
 @app.route("/logout")
@@ -100,12 +92,13 @@ def new_recipe():
         return render_template("new.html")
 
     author_id = session["user_id"]
-    title = request.form["title"].strip()
-    if not title or len(title) > 100:
-        flash("Recipe title must be between 1 and 100 characters.", "error")
+    title, errors = recipe.parse_title(request.form["title"])
+    if errors:
+        for error in errors:
+            flash(error, "error")
+        return redirect("/new")
 
     recipe_id = recipe.new_recipe(author_id, title)
-
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
@@ -114,7 +107,6 @@ def show_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
     if r is None:
         abort(404, "This recipe could not be found.")
-
     is_author = True if r["author_id"] == session["user_id"] else False
 
     return render_template("recipe.html", recipe=r, is_author=is_author)
@@ -144,37 +136,36 @@ def edit_recipe(recipe_id):
     parts = request.form["action"].split(":")
     action = parts[0]
     item_id = parts[1] if len(parts) == 2 else None
+    errors = []
 
     if action == "rename":
-        title = request.form["title"].strip()
-        if not title or len(title) > 100:
-            flash("Recipe title must be between 1 and 100 characters.", "error")
-        else:
-            recipe.update_recipe(recipe_id, title)
+        content, errors = recipe.parse_title(request.form["title"])
+        if not errors:
+            recipe.update_recipe(recipe_id, content)
 
     elif action == "tag":
-        name = request.form["tag_name"].strip().lower()
-        tag.tag_recipe(recipe_id, name)
+        content, errors = tag.parse_tag(request.form["tag_name"])
+        if not errors:
+            tag.tag_recipe(recipe_id, content)
 
     elif action == "add_ingredient":
-        content = request.form["ingredient_content"].strip()
-        if not content or len(content) > 100:
-            flash("Ingredient name must be between 1 and 100 characters.", "error")
-        else:
+        content, errors = recipe.parse_ingredient(request.form["ingredient_content"])
+        if not errors:
             recipe.new_ingredient(recipe_id, content)
 
     elif action == "remove_ingredient":
         recipe.delete_ingredient(item_id)
 
     elif action == "add_instruction":
-        content = request.form["instruction_content"].strip()
-        if not content or len(content) > 2000:
-            flash("Recipe step must be between 1 and 2000 characters.", "error")
-        else:
+        content, errors = recipe.parse_ingredient(request.form["instruction_content"])
+        if not errors:
             recipe.new_instruction(recipe_id, content)
 
     elif action == "remove_instruction":
         recipe.delete_instruction(item_id)
+
+    for error in errors:
+        flash(error, "error")
 
     return redirect(f"/recipe/{recipe_id}/edit")
 
@@ -189,7 +180,6 @@ def delete_recipe(recipe_id):
         abort(403, "You do not have permission to edit this recipe.")
 
     recipe.delete_recipe(recipe_id)
-
     return redirect("/")
 
 

@@ -25,6 +25,17 @@ def get_id(name):
     return result[0] if result else None
 
 
+def parse_tag(input):
+    name = input.strip().lower()
+    errors = []
+    if not name:
+        errors.append("Tag must not be blank.")
+    if len(name) > 20:
+        errors.append("Tag must not be longer than 20 characters.")
+
+    return name, errors
+
+
 def tag_recipe(recipe_id, tag_name):
     db = database.get_db()
     tag_id = get_id(tag_name)

@@ -34,6 +34,18 @@ def get_recipe(recipe_id):
     return recipe
 
 
+def parse_title(input):
+    title = input.strip()
+    errors = []
+
+    if not title:
+        errors.append("Title must not be blank.")
+    if len(title) > 50:
+        errors.append("Title must not be longer than 50 characters")
+
+    return title, errors
+
+
 def new_recipe(author_id, title):
     db = database.get_db()
     sql = "INSERT INTO Recipes (title, author_id) VALUES (?, ?)"
@@ -65,6 +77,18 @@ def next_ingredient_number(recipe_id):
     return result[0] + 1
 
 
+def parse_ingredient(input):
+    ingredient = input.strip()
+    errors = []
+
+    if not ingredient:
+        errors.append("Ingredient must not be empty.")
+    if len(ingredient) > 100:
+        errors.append("Ingredient must not be longer than 100 characters.")
+
+    return ingredient, errors
+
+
 def new_ingredient(recipe_id, content):
     number = next_ingredient_number(recipe_id)
     db = database.get_db()
@@ -89,6 +113,16 @@ def next_instruction_number(recipe_id):
         return 1
 
     return result[0] + 1
+
+
+def parse_instruction(input):
+    instruction = input.strip()
+    errors = []
+
+    if not instruction:
+        errors.append("Instruction must not be empty.")
+    if len(instruction) > 2000:
+        errors.append("Instruction must not be longer than 2000 characters.")
 
 
 def new_instruction(recipe_id, content):

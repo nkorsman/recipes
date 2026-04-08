@@ -23,6 +23,27 @@ def get_user_id(username):
     return result[0] if result else None
 
 
+def validate_password(password1, password2):
+    errors = []
+    if password1 != password2:
+        errors.append("The passwords you've entered don't match.")
+    if len(password1) < 8:
+        errors.append("Password must be at least 8 characters")
+    if len(password1) > 100:
+        errors.append("Password must not be longer than 100 characters.")
+    return errors
+
+
+def parse_username(input):
+    username = input.strip()
+    errors = []
+    if not username.isalnum():
+        errors.append("Username must consist of only letters and numbers.")
+    if len(username) > 20:
+        errors.append("Username must not be longer than 20 characters.")
+    return username, errors
+
+
 def check_password(user_id, password):
     sql = "SELECT password_hash FROM Users WHERE id = ?"
     result = database.query_db(sql, [user_id], one=True)
