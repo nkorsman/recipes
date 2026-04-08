@@ -223,4 +223,4 @@ def show_tag(tag_id=None, tag_name=None):
     if t is None:
         abort(404, "This tag could not be found.")
 
-    return render_template("tag.html", tag=t)
+    return render_template("tag.html", name=t["name"], recipes=t["recipes"])

@@ -2,8 +2,21 @@ import database
 
 
 def get_tag(id):
-    sql = "SELECT id, name FROM Tags WHERE id = ?"
-    return database.query_db(sql, [id], one=True)
+    sql = "SELECT name FROM Tags WHERE id = ?"
+    result = database.query_db(sql, [id], one=True)
+    if result is None:
+        return None
+
+    tag = {"id": id, "name": result[0]}
+
+    sql = """SELECT R.id, R.title, U.username
+            FROM Recipes R
+            JOIN Users U ON R.author_id = U.id
+            JOIN RecipeTags T ON R.id = T.recipe_id
+            WHERE T.tag_id = ?"""
+    tag["recipes"] = database.query_db(sql, [id])
+
+    return tag
 
 
 def get_id(name):
