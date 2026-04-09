@@ -1,0 +1,29 @@
+{% extends "edit/edit.html" %}
+
+{% block ingredients %}
+    <h3>Ingredients</h3>
+    <form method="post">
+        <!-- We need a hidden submit button here since pressing enter submits the form using the form's first submit button.   -->
+        <button type="submit" name="action" value="save" hidden>Save</button>
+        {% for ingredient in ingredients %}
+            <input
+                type="text"
+                name="ingredient"
+                value="{{ ingredient }}"
+                maxlength="100"
+            />
+            <button
+                type="submit"
+                name="action"
+                value="remove:{{ loop.index0 }}"
+            >
+                -
+            </button>
+            {% if not loop.last %}<br />{% endif %}
+        {% endfor %}
+        <button type="submit" name="action" value="new">+</button>
+        <br />
+        <button type="submit" name="action" value="save">Save</button>
+        <button type="submit" name="action" value="cancel">Cancel</button>
+    </form>
+{% endblock ingredients %}

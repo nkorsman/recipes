@@ -1,0 +1,27 @@
+{% extends "recipe.html" %}
+
+{% block title %}
+    {{ super() }}
+{% endblock title %}
+
+{% block actions %}
+    <a href="/recipe/{{ recipe.id }}/edit/rename">Rename recipe</a>
+    <form method="post" action="/recipe/{{ recipe.id }}/edit/delete">
+        <button type="submit">Delete recipe</button>
+    </form>
+{% endblock actions %}
+
+{% block tags %}
+    {{ super() }}
+    <a href="/recipe/{{ recipe.id }}/edit/tags">Edit tags</a>
+{% endblock tags %}
+
+{% block ingredients %}
+    {{ super() }}
+    <a href="/recipe/{{ recipe.id }}/edit/ingredients">Edit ingredients</a>
+{% endblock ingredients %}
+
+{% block instructions %}
+    {{ super() }}
+    <a href="/recipe/{{ recipe.id }}/edit/instructions">Edit recipe steps</a>
+{% endblock instructions %}

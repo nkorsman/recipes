@@ -1,0 +1,9 @@
+{% extends "edit/edit.html" %}
+
+{% block title %}
+    <form method="post">
+        <input type="text" name="title" value="{{ title }}" />
+        <button type="submit" name="action" value="save">Save</button>
+        <button type="submit" name="action" value="cancel">Cancel</button>
+    </form>
+{% endblock title %}

@@ -32,7 +32,7 @@ def parse_tag(input):
 
 
 def tag_recipe(recipe_id, tag_name):
-    errors = []
+    tag_name, errors = parse_tag(tag_name)
     db = database.get_db()
     tag_id = get_id(tag_name)
     if tag_id is None:

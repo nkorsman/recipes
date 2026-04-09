@@ -71,17 +71,25 @@ def parse_title(input):
 
 
 def new_recipe(author_id, title):
+    title, errors = parse_title(title)
+    if errors:
+        return None, errors
+
     db = database.get_db()
     sql = "INSERT INTO Recipes (title, author_id) VALUES (?, ?)"
     result = db.execute(sql, [title, author_id])
     db.commit()
-    return result.lastrowid
+    return result.lastrowid, None
 
 
-def update_recipe(id, title):
+def rename_recipe(recipe_id, title):
+    title, errors = parse_title(title)
+    if errors:
+        return errors
+
     db = database.get_db()
     sql = "UPDATE Recipes SET title = ? WHERE id = ?"
-    db.execute(sql, [title, id])
+    db.execute(sql, [title, recipe_id])
     db.commit()
 
 
@@ -90,15 +98,6 @@ def delete_recipe(id):
     sql = "DELETE FROM Recipes WHERE id = ?"
     db.execute(sql, [id])
     db.commit()
-
-
-def next_ingredient_number(recipe_id):
-    sql = "SELECT MAX(ingredient_number) FROM RecipeIngredients WHERE recipe_id = ?"
-    result = database.query_db(sql, [recipe_id], one=True)
-    if result is None or result[0] is None:
-        return 1
-
-    return result[0] + 1
 
 
 def parse_ingredient(input):
@@ -113,56 +112,55 @@ def parse_ingredient(input):
     return ingredient, errors
 
 
-def new_ingredient(recipe_id, content):
-    number = next_ingredient_number(recipe_id)
-    db = database.get_db()
-    sql = """INSERT INTO RecipeIngredients
-             (content, ingredient_number, recipe_id)
-             VALUES (?, ?, ?)"""
-    db.execute(sql, [content, number, recipe_id])
-    db.commit()
-
-
-def delete_ingredient(id):
-    db = database.get_db()
-    sql = "DELETE FROM RecipeIngredients WHERE id = ?"
-    db.execute(sql, [id])
-    db.commit()
-
-
-def next_instruction_number(recipe_id):
-    sql = "SELECT MAX(instruction_number) FROM RecipeInstructions WHERE recipe_id = ?"
-    result = database.query_db(sql, [recipe_id], one=True)
-    if result is None or result[0] is None:
-        return 1
-
-    return result[0] + 1
-
-
 def parse_instruction(input):
     instruction = input.strip()
     errors = []
 
     if not instruction:
         errors.append("Instruction must not be empty.")
-    if len(instruction) > 2000:
-        errors.append("Instruction must not be longer than 2000 characters.")
+    if len(instruction) > 1000:
+        errors.append("Instruction must not be longer than 1000 characters.")
 
     return instruction, errors
 
 
-def new_instruction(recipe_id, content):
-    number = next_instruction_number(recipe_id)
+def save_ingredients(recipe_id, ingredients):
+    errors = []
     db = database.get_db()
-    sql = """INSERT INTO RecipeInstructions
-            (content, instruction_number, recipe_id)
-            VALUES (?, ?, ?)"""
-    db.execute(sql, [content, number, recipe_id])
-    db.commit()
+    sql = "DELETE FROM RecipeIngredients WHERE recipe_id = ?"
+    db.execute(sql, [recipe_id])
+
+    for i, ingredient in enumerate(ingredients):
+        ingredient, e = parse_ingredient(ingredient)
+        for msg in e:
+            errors.append(f"Ingredient {i + 1}: {msg}")
+        sql = """INSERT INTO RecipeIngredients
+                 (content, ingredient_number, recipe_id)
+                 VALUES (?, ?, ?)"""
+        db.execute(sql, [ingredient, i, recipe_id])
+
+    if not errors:
+        db.commit()
+
+    return errors
 
 
-def delete_instruction(id):
+def save_instructions(recipe_id, instructions):
+    errors = []
     db = database.get_db()
-    sql = "DELETE FROM RecipeInstructions WHERE id = ?"
-    db.execute(sql, [id])
-    db.commit()
+    sql = "DELETE FROM RecipeInstructions WHERE recipe_id = ?"
+    db.execute(sql, [recipe_id])
+
+    for i, instruction in enumerate(instructions):
+        instruction, e = parse_instruction(instruction)
+        for msg in e:
+            errors.append(f"Step {i + 1}: {msg}")
+        sql = """INSERT INTO RecipeInstructions
+                 (content, instruction_number, recipe_id)
+                 VALUES (?, ?, ?)"""
+        db.execute(sql, [instruction, i, recipe_id])
+
+    if not errors:
+        db.commit()
+
+    return errors

@@ -112,13 +112,14 @@ def new_recipe():
         return render_template("new.html")
 
     author_id = session["user_id"]
-    title, errors = recipe.parse_title(request.form["title"])
+    title = request.form["title"]
+
+    recipe_id, errors = recipe.new_recipe(author_id, title)
     if errors:
         for error in errors:
             flash(error, "error")
         return redirect("/new")
 
-    recipe_id = recipe.new_recipe(author_id, title)
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
@@ -141,86 +142,131 @@ def show_recipe(recipe_id):
 @recipe_owner_required
 def edit_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
-    return render_template("edit.html", recipe=r)
+    return render_template("edit/edit.html", recipe=r)
 
 
-@app.route("/recipe/<int:recipe_id>/rename", methods=["POST"])
+@app.route("/recipe/<int:recipe_id>/edit/ingredients", methods=["GET", "POST"])
+@login_required
+@recipe_owner_required
+def edit_ingredients(recipe_id):
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
+        abort(404, "Recipe could not be found.")
+
+    if request.method == "GET":
+        ingredients = [i["content"] for i in r["ingredients"]]
+        return render_template(
+            "edit/ingredients.html", recipe=r, ingredients=ingredients
+        )
+
+    parts = request.form["action"].split(":")
+    action = parts[0]
+    ingredients = request.form.getlist("ingredient")
+
+    if action == "cancel":
+        return redirect(f"/recipe/{recipe_id}/edit")
+    elif action == "new":
+        ingredients.append("")
+    elif action == "remove":
+        ingredients.pop(int(parts[1]))
+    elif action == "save":
+        errors = recipe.save_ingredients(recipe_id, ingredients)
+        if errors:
+            for error in errors:
+                flash(error, "error")
+        else:
+            return redirect(f"/recipe/{recipe_id}/edit")
+
+    return render_template("edit/ingredients.html", recipe=r, ingredients=ingredients)
+
+
+@app.route("/recipe/<int:recipe_id>/edit/instructions", methods=["GET", "POST"])
+@login_required
+@recipe_owner_required
+def edit_instructions(recipe_id):
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
+        abort(404, "Recipe could not be found.")
+
+    if request.method == "GET":
+        instructions = [i["content"] for i in r["instructions"]]
+        return render_template(
+            "edit/instructions.html", recipe=r, instructions=instructions
+        )
+
+    parts = request.form["action"].split(":")
+    action = parts[0]
+    instructions = request.form.getlist("instruction")
+
+    if action == "cancel":
+        return redirect(f"/recipe/{recipe_id}/edit")
+    elif action == "new":
+        instructions.append("")
+    elif action == "remove":
+        instructions.pop(int(parts[1]))
+    elif action == "save":
+        errors = recipe.save_instructions(recipe_id, instructions)
+        if errors:
+            for error in errors:
+                flash(error, "error")
+        else:
+            return redirect(f"/recipe/{recipe_id}/edit")
+
+    return render_template(
+        "edit/instructions.html", recipe=r, instructions=instructions
+    )
+
+
+@app.route("/recipe/<int:recipe_id>/edit/rename", methods=["GET", "POST"])
 @login_required
 @recipe_owner_required
 def rename_recipe(recipe_id):
-    content, errors = recipe.parse_title(request.form["title"])
-    if errors:
-        for e in errors:
-            flash(e, "error")
-    else:
-        recipe.update_recipe(recipe_id, content)
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
+        abort(404, "Recipe could not be found.")
+    if request.method == "GET":
+        title = r["title"]
+        return render_template("edit/rename.html", recipe=r, title=title)
+
+    action = request.form["action"]
+    title = request.form["title"]
+
+    if action == "save":
+        errors = recipe.rename_recipe(recipe_id, title)
+        if errors:
+            for error in errors:
+                flash(error, "error")
+            return render_template("edit/rename.html", recipe=r, title=title)
+
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
-@app.route("/recipe/<int:recipe_id>/tag", methods=["POST"])
+@app.route("/recipe/<int:recipe_id>/edit/tags", methods=["GET", "POST"])
 @login_required
 @recipe_owner_required
-def tag_recipe(recipe_id):
-    content, errors = tag.parse_tag(request.form["tag_name"])
-    if not errors:
-        errors = tag.tag_recipe(recipe_id, content)
-    if errors:
-        for e in errors:
-            flash(e, "error")
-    return redirect(f"/recipe/{recipe_id}/edit")
+def edit_tags(recipe_id):
+    r = recipe.get_recipe(recipe_id)
+    if r is None:
+        abort(404, "Recipe could not be found.")
+
+    if request.method == "GET":
+        return render_template("edit/tags.html", recipe=r)
+
+    parts = request.form["action"].split(":")
+    action = parts[0]
+
+    if action == "done":
+        return redirect(f"/recipe/{recipe_id}/edit")
+    elif action == "new":
+        tag.tag_recipe(recipe_id, request.form["new_tag"])
+    elif action == "remove":
+        tag_id = r["tags"][int(parts[1])]["id"]
+        tag.untag_recipe(recipe_id, tag_id)
+
+    return redirect(f"/recipe/{recipe_id}/edit/tags")
 
 
-@app.route("/recipe/<int:recipe_id>/untag/<int:item_id>", methods=["POST"])
-@login_required
-@recipe_owner_required
-def untag_recipe(recipe_id, item_id):
-    tag.untag_recipe(recipe_id, item_id)
-    return redirect(f"/recipe/{recipe_id}/edit")
-
-
-@app.route("/recipe/<int:recipe_id>/add-ingredient", methods=["POST"])
-@login_required
-@recipe_owner_required
-def add_ingredient(recipe_id):
-    content, errors = recipe.parse_ingredient(request.form["ingredient_content"])
-    if errors:
-        for e in errors:
-            flash(e, "error")
-    else:
-        recipe.new_ingredient(recipe_id, content)
-    return redirect(f"/recipe/{recipe_id}/edit")
-
-
-@app.route("/recipe/<int:recipe_id>/remove-ingredient/<int:item_id>", methods=["POST"])
-@login_required
-@recipe_owner_required
-def remove_ingredient(recipe_id, item_id):
-    recipe.delete_ingredient(item_id)
-    return redirect(f"/recipe/{recipe_id}/edit")
-
-
-@app.route("/recipe/<int:recipe_id>/add-instruction", methods=["POST"])
-@login_required
-@recipe_owner_required
-def add_instruction(recipe_id):
-    content, errors = recipe.parse_instruction(request.form["instruction_content"])
-    if errors:
-        for e in errors:
-            flash(e, "error")
-    else:
-        recipe.new_instruction(recipe_id, content)
-    return redirect(f"/recipe/{recipe_id}/edit")
-
-
-@app.route("/recipe/<int:recipe_id>/remove-instruction/<int:item_id>", methods=["POST"])
-@login_required
-@recipe_owner_required
-def remove_instruction(recipe_id, item_id):
-    recipe.delete_instruction(item_id)
-    return redirect(f"/recipe/{recipe_id}/edit")
-
-
-@app.route("/recipe/<int:recipe_id>/delete", methods=["POST"])
+@app.route("/recipe/<int:recipe_id>/edit/delete", methods=["POST"])
 @login_required
 @recipe_owner_required
 def delete_recipe(recipe_id):

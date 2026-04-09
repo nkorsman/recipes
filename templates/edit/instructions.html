@@ -1,0 +1,30 @@
+{% extends "edit/edit.html" %}
+
+{% block instructions %}
+    <h3>Preparation</h3>
+    <form method="post">
+        {% for instruction in instructions %}
+            <textarea
+                name="instruction"
+                rows="5"
+                cols="20"
+                placeholder="Recipe step"
+                maxlength="1000"
+            >
+{{ instruction }}</textarea
+            >
+            <button
+                type="submit"
+                name="action"
+                value="remove:{{ loop.index0 }}"
+            >
+                -
+            </button>
+            {% if not loop.last %}<br />{% endif %}
+        {% endfor %}
+        <button type="submit" name="action" value="new">+</button>
+        <br />
+        <button type="submit" name="action" value="save">Save</button>
+        <button type="submit" name="action" value="cancel">Cancel</button>
+    </form>
+{% endblock instructions %}
