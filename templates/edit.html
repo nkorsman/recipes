@@ -1,86 +1,59 @@
 {% extends "layout.html" %} {% block content %}
+<h2>{{ recipe.title }}</h2>
 
-<form method="post">
-    <h2>{{ recipe.title }}</h2>
-    <input
-        type="text"
-        name="title"
-        placeholder="New recipe title"
-        maxlength="100"
-    />
-    <button type="submit" name="action" value="rename">Rename recipe</button>
-    <p>
-        Tags: {% for tag in recipe.tags %} {{ tag.name }} (<button
-            type="submit"
-            name="action"
-            value="untag:{{ tag.id }}"
-        >
-            Delete</button
-        >) {% endfor %}
-    </p>
-    <input
-        type="text"
-        name="tag_name"
-        placeholder="Tag recipe"
-        maxlength="20"
-    />
-    <button type="submit" name="action" value="tag">Add tag</button>
-    <h3>Ingredients</h3>
-    <ul>
-        {% for ingredient in recipe.ingredients %}
-        <li>
-            {{ ingredient.content }}
-            <button
-                type="submit"
-                name="action"
-                value="remove_ingredient:{{ ingredient.id }}"
-            >
-                Remove
-            </button>
-        </li>
-        {% endfor %}
-        <input
-            type="text"
-            name="ingredient_content"
-            placeholder="New ingredient"
-            maxlength="100"
-        />
-        <button type="submit" name="action" value="add_ingredient">
-            Add ingredient
-        </button>
-    </ul>
-    <h3>Preparation</h3>
-    <ol>
-        {% for instruction in recipe.instructions %}
-        <li>
-            {{ instruction.content }}
-            <button
-                type="submit"
-                name="action"
-                value="remove_instruction:{{ instruction.id }}"
-            >
-                Remove
-            </button>
-        </li>
-        {% endfor %}
-        <li>
-            <textarea
-                name="instruction_content"
-                rows="5"
-                cols="20"
-                placeholder="New recipe step"
-                maxlength="2000"
-            ></textarea>
-            <br />
-            <button type="submit" name="action" value="add_instruction">
-                Add step
-            </button>
-        </li>
-    </ol>
+<form method="post" action="/recipe/{{ recipe.id }}/rename">
+    <input type="text" name="title" placeholder="New recipe title" maxlength="100" />
+    <button type="submit">Rename recipe</button>
 </form>
 
-<form method="post" action="/recipe/{{recipe.id}}/delete">
-    <button type="submit" name="action" value="delete">Delete recipe</button>
+<p>
+    Tags: {% for tag in recipe.tags %} {{ tag.name }} (
+    <form method="post" action="/recipe/{{ recipe.id }}/untag/{{ tag.id }}">
+        <button type="submit">Delete</button>
+    </form>
+    ) {% endfor %}
+</p>
+
+<form method="post" action="/recipe/{{ recipe.id }}/tag">
+    <input type="text" name="tag_name" placeholder="Tag recipe" maxlength="20" />
+    <button type="submit">Add tag</button>
+</form>
+
+<h3>Ingredients</h3>
+<ul>
+    {% for ingredient in recipe.ingredients %}
+    <li>
+        {{ ingredient.content }}
+        <form method="post" action="/recipe/{{ recipe.id }}/remove-ingredient/{{ ingredient.id }}">
+            <button type="submit">Remove</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+<form method="post" action="/recipe/{{ recipe.id }}/add-ingredient">
+    <input type="text" name="ingredient_content" placeholder="New ingredient" maxlength="100" />
+    <button type="submit">Add ingredient</button>
+</form>
+
+<h3>Preparation</h3>
+<ol>
+    {% for instruction in recipe.instructions %}
+    <li>
+        {{ instruction.content }}
+        <form method="post" action="/recipe/{{ recipe.id }}/remove-instruction/{{ instruction.id }}">
+            <button type="submit">Remove</button>
+        </form>
+    </li>
+    {% endfor %}
+</ol>
+<form method="post" action="/recipe/{{ recipe.id }}/add-instruction">
+    <textarea name="instruction_content" rows="5" cols="20" placeholder="New recipe step" maxlength="2000"></textarea>
+    <br />
+    <button type="submit">Add step</button>
+</form>
+
+<form method="post" action="/recipe/{{ recipe.id }}/delete">
+    <button type="submit">Delete recipe</button>
 </form>
 
 <a href="/recipe/{{ recipe.id }}">View recipe</a>

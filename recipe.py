@@ -142,6 +142,8 @@ def parse_instruction(input):
     if len(instruction) > 2000:
         errors.append("Instruction must not be longer than 2000 characters.")
 
+    return instruction, errors
+
 
 def new_instruction(recipe_id, content):
     number = next_instruction_number(recipe_id)
