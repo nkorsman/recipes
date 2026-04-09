@@ -3,6 +3,7 @@
 {% block tags %}
     <form method="post">
         <p>
+            {% if recipe.tags %}
             Tags:
             {% for tag in recipe.tags %}
                 {{ tag.name }} (<button
@@ -13,6 +14,9 @@
                     x</button
                 >)
             {% endfor %}
+            {% else %}
+            No tags.
+            {% endif %}
         </p>
         <input type="text" placeholder="New tag" name="new_tag" />
         <button type="submit" name="action" value="new">Add tag</button>

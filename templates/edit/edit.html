@@ -5,7 +5,9 @@
 {% endblock title %}
 
 {% block actions %}
-    <a href="/recipe/{{ recipe.id }}/edit/rename">Rename recipe</a>
+    <a href="/recipe/{{ recipe.id }}/edit/rename"
+        ><button>Rename recipe</button></a
+    >
     <form method="post" action="/recipe/{{ recipe.id }}/edit/delete">
         <button type="submit">Delete recipe</button>
     </form>
@@ -13,15 +15,19 @@
 
 {% block tags %}
     {{ super() }}
-    <a href="/recipe/{{ recipe.id }}/edit/tags">Edit tags</a>
+    <a href="/recipe/{{ recipe.id }}/edit/tags"><button>Edit tags</button></a>
 {% endblock tags %}
 
 {% block ingredients %}
+    <a href="/recipe/{{ recipe.id }}/edit/ingredients"
+        ><button>Edit ingredients</button></a
+    >
     {{ super() }}
-    <a href="/recipe/{{ recipe.id }}/edit/ingredients">Edit ingredients</a>
 {% endblock ingredients %}
 
 {% block instructions %}
+    <a href="/recipe/{{ recipe.id }}/edit/instructions"
+        ><button>Edit recipe steps</button></a
+    >
     {{ super() }}
-    <a href="/recipe/{{ recipe.id }}/edit/instructions">Edit recipe steps</a>
 {% endblock instructions %}

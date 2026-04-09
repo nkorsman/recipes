@@ -1,41 +1,55 @@
 {% extends "layout.html" %}
 {% block content %}
+    <div class="recipe">
+        <div class="title">
+            {% block title %}
+                <h2>{{ recipe.title }}</h2>
+            {% endblock title %}
+        </div>
 
-    {% block title %}
-        <h2>{{ recipe.title }}</h2>
-    {% endblock title %}
+        <div class="actions">
+            {% block actions %}
+                {% if is_author %}
+                    <a href="/recipe/{{ recipe.id }}/edit"
+                        ><button>Edit recipe</button></a
+                    >
+                {% endif %}
+            {% endblock actions %}
+        </div>
 
-    {% block actions %}
-    {% endblock actions %}
+        <div class="tags">
+            {% block tags %}
+                {% if recipe.tags %}
+                    <p>
+                        Tags:
+                        {% for tag in recipe.tags %}
+                            <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
+                        {% endfor %}
+                    </p>
+                {% endif %}
+            {% endblock tags %}
+        </div>
 
-    {% block tags %}
-        <p>
-            Tags:
-            {% for tag in recipe.tags %}
-                <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
-            {% endfor %}
-        </p>
-    {% endblock tags %}
+        <div class="ingredients">
+            <h3>Ingredients</h3>
+            {% block ingredients %}
+                <ul>
+                    {% for ingredient in recipe.ingredients %}
+                        <li>{{ ingredient.content }}</li>
+                    {% endfor %}
+                </ul>
+            {% endblock ingredients %}
+        </div>
 
-    {% block ingredients %}
-        <h3>Ingredients</h3>
-        <ul>
-            {% for ingredient in recipe.ingredients %}
-                <li>{{ ingredient.content }}</li>
-            {% endfor %}
-        </ul>
-    {% endblock ingredients %}
-
-    {% block instructions %}
-        <h3>Preparation</h3>
-        <ol>
-            {% for instruction in recipe.instructions %}
-                <li>{{ instruction.content }}</li>
-            {% endfor %}
-        </ol>
-    {% endblock instructions %}
-
-    {% if is_author %}
-        <a href="/recipe/{{ recipe.id }}/edit">Edit recipe</a>
-    {% endif %}
+        <div class="instructions">
+            <h3>Preparation</h3>
+            {% block instructions %}
+                <ol>
+                    {% for instruction in recipe.instructions %}
+                        <li>{{ instruction.content }}</li>
+                    {% endfor %}
+                </ol>
+            {% endblock instructions %}
+        </div>
+    </div>
 {% endblock content %}

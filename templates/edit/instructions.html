@@ -1,13 +1,12 @@
 {% extends "edit/edit.html" %}
 
 {% block instructions %}
-    <h3>Preparation</h3>
     <form method="post">
         {% for instruction in instructions %}
             <textarea
                 name="instruction"
-                rows="5"
-                cols="20"
+                rows="4"
+                cols="60"
                 placeholder="Recipe step"
                 maxlength="1000"
             >
