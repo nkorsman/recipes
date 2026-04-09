@@ -138,13 +138,9 @@ def show_recipe(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/edit", methods=["GET"])
 @login_required
+@recipe_owner_required
 def edit_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404, "The recipe you're trying to edit could not be found.")
-    if r["author_id"] != session["user_id"]:
-        abort(403, "You do not have permission to edit this recipe.")
-
     return render_template("edit.html", recipe=r)
 
 
@@ -166,13 +162,11 @@ def rename_recipe(recipe_id):
 @recipe_owner_required
 def tag_recipe(recipe_id):
     content, errors = tag.parse_tag(request.form["tag_name"])
-    if content in [t["name"] for t in r["tags"]]:
-        errors.append("Recipe already has this tag")
+    if not errors:
+        errors = tag.tag_recipe(recipe_id, content)
     if errors:
         for e in errors:
             flash(e, "error")
-    else:
-        tag.tag_recipe(recipe_id, content)
     return redirect(f"/recipe/{recipe_id}/edit")
 
 

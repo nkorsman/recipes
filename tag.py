@@ -32,12 +32,21 @@ def parse_tag(input):
 
 
 def tag_recipe(recipe_id, tag_name):
+    errors = []
     db = database.get_db()
     tag_id = get_id(tag_name)
     if tag_id is None:
         sql = "INSERT INTO Tags (name) VALUES (?)"
         result = db.execute(sql, [tag_name])
         tag_id = result.lastrowid
+    else:
+        sql = "SELECT id FROM RecipeTags WHERE recipe_id = ? AND tag_id = ?"
+        exists = database.query_db(sql, [recipe_id, tag_id], one=True)
+        if exists:
+            errors.append("Recipe already has this tag.")
+
+    if errors:
+        return errors
 
     sql = "INSERT INTO RecipeTags (recipe_id, tag_id) VALUES (?, ?)"
     db.execute(sql, [recipe_id, tag_id])
