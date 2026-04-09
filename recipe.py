@@ -39,6 +39,12 @@ def get_recipe(recipe_id):
     return recipe
 
 
+def get_author(recipe_id):
+    sql = "SELECT author_id FROM Recipes WHERE id = ?"
+    result = database.query_db(sql, [recipe_id], one=True)
+    return result[0] if result else None
+
+
 def search_recipes(query):
     query = f"%{query}%"
     sql = """SELECT DISTINCT R.id, R.title, U.username

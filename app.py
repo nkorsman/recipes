@@ -23,6 +23,19 @@ def login_required(f):
     return decorated_function
 
 
+def recipe_owner_required(f):
+    @wraps(f)
+    def decorated_function(recipe_id, *args, **kwargs):
+        author_id = recipe.get_author(recipe_id)
+        if author_id is None:
+            abort(404, "Recipe could not be found.")
+        if author_id != session["user_id"]:
+            abort(403, "You do not have permission to edit this recipe.")
+        return f(recipe_id, *args, **kwargs)
+
+    return decorated_function
+
+
 @app.errorhandler(404)
 @app.errorhandler(403)
 @app.errorhandler(401)
@@ -137,12 +150,8 @@ def edit_recipe(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/rename", methods=["POST"])
 @login_required
+@recipe_owner_required
 def rename_recipe(recipe_id):
-    r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404)
-    if r["author_id"] != session["user_id"]:
-        abort(403)
     content, errors = recipe.parse_title(request.form["title"])
     if errors:
         for e in errors:
@@ -154,12 +163,8 @@ def rename_recipe(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/tag", methods=["POST"])
 @login_required
+@recipe_owner_required
 def tag_recipe(recipe_id):
-    r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404)
-    if r["author_id"] != session["user_id"]:
-        abort(403)
     content, errors = tag.parse_tag(request.form["tag_name"])
     if content in [t["name"] for t in r["tags"]]:
         errors.append("Recipe already has this tag")
@@ -173,24 +178,16 @@ def tag_recipe(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/untag/<int:item_id>", methods=["POST"])
 @login_required
+@recipe_owner_required
 def untag_recipe(recipe_id, item_id):
-    r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404)
-    if r["author_id"] != session["user_id"]:
-        abort(403)
     tag.untag_recipe(recipe_id, item_id)
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
 @app.route("/recipe/<int:recipe_id>/add-ingredient", methods=["POST"])
 @login_required
+@recipe_owner_required
 def add_ingredient(recipe_id):
-    r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404)
-    if r["author_id"] != session["user_id"]:
-        abort(403)
     content, errors = recipe.parse_ingredient(request.form["ingredient_content"])
     if errors:
         for e in errors:
@@ -202,24 +199,16 @@ def add_ingredient(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/remove-ingredient/<int:item_id>", methods=["POST"])
 @login_required
+@recipe_owner_required
 def remove_ingredient(recipe_id, item_id):
-    r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404)
-    if r["author_id"] != session["user_id"]:
-        abort(403)
     recipe.delete_ingredient(item_id)
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
 @app.route("/recipe/<int:recipe_id>/add-instruction", methods=["POST"])
 @login_required
+@recipe_owner_required
 def add_instruction(recipe_id):
-    r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404)
-    if r["author_id"] != session["user_id"]:
-        abort(403)
     content, errors = recipe.parse_instruction(request.form["instruction_content"])
     if errors:
         for e in errors:
@@ -231,25 +220,16 @@ def add_instruction(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/remove-instruction/<int:item_id>", methods=["POST"])
 @login_required
+@recipe_owner_required
 def remove_instruction(recipe_id, item_id):
-    r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404)
-    if r["author_id"] != session["user_id"]:
-        abort(403)
     recipe.delete_instruction(item_id)
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
 @app.route("/recipe/<int:recipe_id>/delete", methods=["POST"])
 @login_required
+@recipe_owner_required
 def delete_recipe(recipe_id):
-    r = recipe.get_recipe(recipe_id)
-    if r is None:
-        abort(404, "The recipe you're trying to edit could not be found.")
-    if r["author_id"] != session["user_id"]:
-        abort(403, "You do not have permission to edit this recipe.")
-
     recipe.delete_recipe(recipe_id)
     return redirect("/")
 
