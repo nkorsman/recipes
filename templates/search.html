@@ -1,14 +1,17 @@
-{% extends "layout.html" %} {% block content %}
-<h2>Search</h2>
-<form action="/search" method="get">
-    <p>
-        Query: {% if query %}
-        <input type="text" name="q" value="{{ query }}" />
-        {% else %}
-        <input type="text" name="q" />
-        {% endif %}
-        <button type="submit">Search</button>
-    </p>
-</form>
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Search</h2>
+    <form action="/search" method="get">
+        <p>
+            Query:
+            {% if query %}
+                <input type="text" name="q" value="{{ query }}" />
+            {% else %}
+                <input type="text" name="q" />
+            {% endif %}
+            <button type="submit">Search</button>
+        </p>
+    </form>
 
-{% if query %}{% include "recipelist.html" %}{%endif%} {% endblock %}
+    {% if query %}{% include "recipelist.html" %}{% endif %}
+{% endblock %}
