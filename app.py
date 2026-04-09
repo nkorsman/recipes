@@ -36,6 +36,13 @@ def index():
     return render_template("index.html", recipes=recipes)
 
 
+@app.route("/search")
+def search():
+    query = request.args.get("q")
+    results = recipe.search_recipes(query) if query else None
+    return render_template("search.html", query=query, recipes=results)
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if "user_id" in session:

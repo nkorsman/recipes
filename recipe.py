@@ -39,6 +39,19 @@ def get_recipe(recipe_id):
     return recipe
 
 
+def search_recipes(query):
+    query = f"%{query}%"
+    sql = """SELECT DISTINCT R.id, R.title, U.username
+             FROM Recipes R
+             JOIN Users U ON U.id = R.author_id
+             JOIN RecipeIngredients G ON G.recipe_id = R.id
+             JOIN RecipeInstructions S ON S.recipe_id = R.id
+             WHERE R.title LIKE ?
+             OR G.content LIKE ?
+             OR S.content LIKE ?"""
+    return database.query_db(sql, [query, query, query])
+
+
 def parse_title(input):
     title = input.strip()
     errors = []
