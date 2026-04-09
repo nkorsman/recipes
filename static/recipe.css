@@ -1,0 +1,33 @@
+li {
+    margin-bottom: 0.5em;
+}
+
+.recipe {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+}
+
+.title {
+    grid-column: 1;
+}
+
+.title input {
+    font-size: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.actions {
+    grid-column: 1;
+}
+
+.tags {
+    grid-column: 2;
+}
+
+ingredients {
+    grid-column: 1;
+}
+
+.instructions {
+    grid-column: 2;
+}

@@ -4,37 +4,3 @@ body {
     font-family: Palatino, Georgia, serif;
     line-height: 1.5;
 }
-
-li {
-    margin-bottom: 0.5em;
-}
-
-.recipe {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-}
-
-.recipe .title {
-    grid-column: 1;
-}
-
-.title input {
-    font-size: 1.5em;
-    margin-bottom: 0.5em;
-}
-
-.recipe .actions {
-    grid-column: 1;
-}
-
-.recipe .tags {
-    grid-column: 2;
-}
-
-.recipe .ingredients {
-    grid-column: 1;
-}
-
-.recipe .instructions {
-    grid-column: 2;
-}
