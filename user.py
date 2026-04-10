@@ -3,6 +3,7 @@ import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import database
+import recipe
 
 
 def new_user(username, password):
@@ -17,10 +18,22 @@ def new_user(username, password):
     return result.lastrowid
 
 
-def get_user_id(username):
+def get_id(username):
     sql = "SELECT id FROM Users WHERE username = ?"
     result = database.query_db(sql, [username], one=True)
     return result[0] if result else None
+
+
+def get_user(id):
+    sql = "SELECT username FROM Users WHERE id = ?"
+    result = database.query_db(sql, [id], one=True)
+    if result is None:
+        return None
+
+    user = {"id": id, "name": result[0]}
+    user["recipes"] = recipe.get_recipes(user_id=id)
+
+    return user
 
 
 def validate_password(password1, password2):

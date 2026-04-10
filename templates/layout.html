@@ -9,19 +9,28 @@
 
     <body>
         <h1>Recipes</h1>
-        <p>
-            <a href="/">Home</a> | <a href="/search">Search</a> |
-            {%
-                if
-                session.user_id
-            %}
-                <a href="/new">New recipe</a> |
-                <a href="/logout">Log out</a>
-            {% else %}
-                <a href="/login">Log in</a> |
-                <a href="/register">Register</a>
-            {% endif %}
-        </p>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/search">Search</a></li>
+                {% if session.user_id %}
+                    <li><a href="/new">New recipe</a></li>
+                {% endif %}
+            </ul>
+            <ul>
+                {% if session.user_id %}
+                    <li>
+                        <a href="/user/{{ session.username }}"
+                            >{{ session.username }}</a
+                        >
+                    </li>
+                    <li><a href="/logout">Log out</a></li>
+                {% else %}
+                    <li><a href="/login">Log in</a></li>
+                    <li><a href="/register">Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
         <hr />
         {% for category, message in get_flashed_messages(with_categories=true) %}
             {% if category == "error" %}

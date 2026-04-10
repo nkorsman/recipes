@@ -1,16 +1,29 @@
 import database
 
 
-def get_recipes(tag=None):
+def get_recipes(tag_id=None, user_id=None):
     sql = """SELECT R.id, R.title, U.username
              FROM Recipes R
              JOIN Users U ON U.id = R.author_id"""
-    if tag:
-        sql += """\nJOIN RecipeTags T ON T.recipe_id = R.id
-                    WHERE T.tag_id = ?"""
-        return database.query_db(sql, [tag])
 
-    return database.query_db(sql)
+    joins = []
+    conditions = []
+    parameters = []
+
+    if tag_id:
+        joins.append("JOIN RecipeTags T ON T.recipe_id = R.id")
+        conditions.append("T.tag_id = ?")
+        parameters.append(tag_id)
+    if user_id:
+        conditions.append("R.author_id = ?")
+        parameters.append(user_id)
+
+    if joins:
+        sql += "\n" + "\n".join(joins)
+    if conditions:
+        sql += "\nWHERE " + " AND ".join(conditions)
+
+    return database.query_db(sql, parameters)
 
 
 def get_recipe(recipe_id):

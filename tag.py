@@ -9,7 +9,7 @@ def get_tag(id):
         return None
 
     tag = {"id": id, "name": result[0]}
-    tag["recipes"] = recipe.get_recipes(id)
+    tag["recipes"] = recipe.get_recipes(tag_id=id)
 
     return tag
 

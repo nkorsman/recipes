@@ -73,6 +73,7 @@ def register():
         if user_id:
             flash(f"User {username} succesfully created", "success")
             session["user_id"] = user_id
+            session["username"] = username
             return redirect("/")
         errors.append("Username is already taken")
 
@@ -88,13 +89,14 @@ def login():
 
     username = request.form["username"]
     password = request.form["password"]
-    user_id = user.get_user_id(username)
+    user_id = user.get_id(username)
 
     if not user.check_password(user_id, password):
         flash("Username or password is incorrect.", "error")
         return redirect("/login")
 
     session["user_id"] = user_id
+    session["username"] = username
     return redirect("/")
 
 
@@ -135,6 +137,26 @@ def show_recipe(recipe_id):
         is_author = False
 
     return render_template("recipe.html", recipe=r, is_author=is_author)
+
+
+@app.route("/tag/<tag_name>")
+def show_tag(tag_name):
+    tag_id = tag.get_id(tag_name)
+    t = tag.get_tag(tag_id)
+    if t is None:
+        abort(404, "This tag could not be found.")
+
+    return render_template("tag.html", name=t["name"], recipes=t["recipes"])
+
+
+@app.route("/user/<username>")
+def show_user(username):
+    user_id = user.get_id(username)
+    u = user.get_user(user_id)
+    if u is None:
+        abort(404, "This user could not be found.")
+
+    return render_template("user.html", name=u["name"], recipes=u["recipes"])
 
 
 @app.route("/recipe/<int:recipe_id>/edit", methods=["GET"])
@@ -272,16 +294,3 @@ def edit_tags(recipe_id):
 def delete_recipe(recipe_id):
     recipe.delete_recipe(recipe_id)
     return redirect("/")
-
-
-@app.route("/tag/<int:tag_id>")
-@app.route("/tag/<tag_name>")
-def show_tag(tag_id=None, tag_name=None):
-    if tag_name:
-        tag_id = tag.get_id(tag_name)
-
-    t = tag.get_tag(tag_id)
-    if t is None:
-        abort(404, "This tag could not be found.")
-
-    return render_template("tag.html", name=t["name"], recipes=t["recipes"])
