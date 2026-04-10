@@ -176,7 +176,10 @@ def edit_ingredients(recipe_id):
         abort(404, "Recipe could not be found.")
 
     if request.method == "GET":
-        ingredients = [i["content"] for i in r["ingredients"]]
+        if r["ingredients"]:
+            ingredients = [i["content"] for i in r["ingredients"]]
+        else:
+            ingredients = [""]
         return render_template(
             "edit/ingredients.html", recipe=r, ingredients=ingredients
         )
@@ -211,7 +214,10 @@ def edit_instructions(recipe_id):
         abort(404, "Recipe could not be found.")
 
     if request.method == "GET":
-        instructions = [i["content"] for i in r["instructions"]]
+        if r["instructions"]:
+            instructions = [i["content"] for i in r["instructions"]]
+        else:
+            instructions = [""]
         return render_template(
             "edit/instructions.html", recipe=r, instructions=instructions
         )
