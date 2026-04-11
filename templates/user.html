@@ -1,5 +1,9 @@
+{% from "macros.html" import recipe_list %}
 {% extends "layout.html" %}
 {% block content %}
-    <h2>All recipes by {{ name }}</h2>
-    {% include "recipelist.html" %}
+    <h2>{{ user.name }}</h2>
+    <h3>Authored recipes</h3>
+    {{ recipe_list(user.authored_recipes) }}
+    <h3>Favorite recipes</h3>
+    {{ recipe_list(user.favorite_recipes) }}
 {% endblock %}

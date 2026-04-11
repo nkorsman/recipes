@@ -1,5 +1,6 @@
+{% from "macros.html" import recipe_list %}
 {% extends "layout.html" %}
 {% block content %}
-    <h2>All recipes tagged with {{ name }}</h2>
-    {% include "recipelist.html" %}
+    <h2>All recipes tagged with {{ tag.name }}</h2>
+    {{ recipe_list(tag.recipes) }}
 {% endblock %}

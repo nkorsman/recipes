@@ -142,7 +142,7 @@ def show_tag(tag_name):
     if t is None:
         abort(404, "This tag could not be found.")
 
-    return render_template("tag.html", name=t["name"], recipes=t["recipes"])
+    return render_template("tag.html", tag=t)
 
 
 @app.route("/user/<username>")
@@ -152,7 +152,7 @@ def show_user(username):
     if u is None:
         abort(404, "This user could not be found.")
 
-    return render_template("user.html", name=u["name"], recipes=u["recipes"])
+    return render_template("user.html", user=u)
 
 
 @app.route("/recipe/<int:recipe_id>/favorite", methods=["POST"])

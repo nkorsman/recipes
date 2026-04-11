@@ -1,7 +1,7 @@
 import database
 
 
-def get_recipes(tag_id=None, user_id=None):
+def get_recipes(tag_id=None, user_id=None, favorited_by=None):
     sql = """SELECT R.id, R.title, U.username
              FROM Recipes R
              JOIN Users U ON U.id = R.author_id"""
@@ -17,6 +17,10 @@ def get_recipes(tag_id=None, user_id=None):
     if user_id:
         conditions.append("R.author_id = ?")
         parameters.append(user_id)
+    if favorited_by:
+        joins.append("JOIN UserFavorites F ON F.recipe_id = R.id")
+        conditions.append("F.user_id = ?")
+        parameters.append(favorited_by)
 
     if joins:
         sql += "\n" + "\n".join(joins)
