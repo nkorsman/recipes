@@ -26,13 +26,19 @@ def get_recipes(tag_id=None, user_id=None):
     return database.query_db(sql, parameters)
 
 
-def get_recipe(recipe_id):
+def get_recipe(recipe_id, viewer_id=None):
     sql = "SELECT title, author_id FROM Recipes WHERE id = ?"
     result = database.query_db(sql, [recipe_id], one=True)
     if result is None:
         return None
 
-    recipe = {"id": recipe_id, "title": result[0], "author_id": result[1]}
+    recipe = {"id": recipe_id, "title": result[0]}
+
+    recipe["is_author"] = viewer_id == result[1]
+
+    sql = "SELECT id FROM UserFavorites WHERE recipe_id = ? AND user_id = ?"
+    result = database.query_db(sql, [recipe_id, viewer_id], one=True)
+    recipe["is_favorite"] = result is not None
 
     sql = """SELECT id, content, ingredient_number
              FROM RecipeIngredients
@@ -177,3 +183,17 @@ def save_instructions(recipe_id, instructions):
         db.commit()
 
     return errors
+
+
+def favorite_recipe(recipe_id, user_id):
+    db = database.get_db()
+    sql = "INSERT INTO UserFavorites (recipe_id, user_id) VALUES (?, ?)"
+    db.execute(sql, [recipe_id, user_id])
+    db.commit()
+
+
+def unfavorite_recipe(recipe_id, user_id):
+    db = database.get_db()
+    sql = "DELETE FROM UserFavorites WHERE recipe_id = ? AND user_id = ?"
+    db.execute(sql, [recipe_id, user_id])
+    db.commit()

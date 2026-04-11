@@ -127,16 +127,12 @@ def new_recipe():
 
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
-    r = recipe.get_recipe(recipe_id)
+    user_id = session["user_id"] if "user_id" in session else None
+    r = recipe.get_recipe(recipe_id, user_id)
     if r is None:
         abort(404, "This recipe could not be found.")
 
-    if "user_id" in session:
-        is_author = session["user_id"] == r["author_id"]
-    else:
-        is_author = False
-
-    return render_template("recipe.html", recipe=r, is_author=is_author)
+    return render_template("recipe.html", recipe=r)
 
 
 @app.route("/tag/<tag_name>")
@@ -157,6 +153,20 @@ def show_user(username):
         abort(404, "This user could not be found.")
 
     return render_template("user.html", name=u["name"], recipes=u["recipes"])
+
+
+@app.route("/recipe/<int:recipe_id>/favorite", methods=["POST"])
+@login_required
+def favorite_recipe(recipe_id):
+    user_id = session["user_id"]
+    action = request.form["action"]
+
+    if action == "favorite":
+        recipe.favorite_recipe(recipe_id, user_id)
+    elif action == "unfavorite":
+        recipe.unfavorite_recipe(recipe_id, user_id)
+
+    return redirect(f"/recipe/{recipe_id}")
 
 
 @app.route("/recipe/<int:recipe_id>/edit", methods=["GET"])

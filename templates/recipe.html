@@ -13,13 +13,43 @@
         </div>
 
         <div class="actions">
-            {% block actions %}
-                {% if is_author %}
-                    <a href="/recipe/{{ recipe.id }}/edit"
-                        ><button>Edit recipe</button></a
-                    >
-                {% endif %}
-            {% endblock actions %}
+            <ul>
+                {% block actions %}
+                    {% if recipe.is_author %}
+                        <li>
+                            <a href="/recipe/{{ recipe.id }}/edit"
+                                ><button>Edit recipe</button></a
+                            >
+                        </li>
+                    {% endif %}
+                    {% if session.user_id %}
+                        <li>
+                            <form
+                                method="post"
+                                action="/recipe/{{ recipe.id }}/favorite"
+                            >
+                                {% if recipe.is_favorite %}
+                                    <button
+                                        type="submit"
+                                        name="action"
+                                        value="unfavorite"
+                                    >
+                                        Unfavorite recipe
+                                    </button>
+                                {% else %}
+                                    <button
+                                        type="submit"
+                                        name="action"
+                                        value="favorite"
+                                    >
+                                        Favorite recipe
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </li>
+                    {% endif %}
+                {% endblock actions %}
+            </ul>
         </div>
 
         <div class="tags">
