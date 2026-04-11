@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Recipes</title>
+        <title>Recipes - {% block title %}{% endblock title %}</title>
         <link rel="stylesheet" href="/static/main.css" />
         {% block head %}
         {% endblock head %}
@@ -32,6 +32,7 @@
             </ul>
         </nav>
         <hr />
+        <h2>{{ self.title() }}</h2>
         {% for category, message in get_flashed_messages(with_categories=true) %}
             {% if category == "error" %}
                 <p>

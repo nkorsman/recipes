@@ -1,17 +1,13 @@
 {% extends "layout.html" %}
 
+{% block title %}{{ recipe.title }}{% endblock %}
+
 {% block head %}
     <link rel="stylesheet" href="/static/recipe.css" />
 {% endblock %}
 
 {% block content %}
     <div class="recipe">
-        <div class="title">
-            {% block title %}
-                <h2>{{ recipe.title }}</h2>
-            {% endblock title %}
-        </div>
-
         <div class="actions">
             <ul>
                 {% block actions %}
@@ -69,22 +65,30 @@
         <div class="ingredients">
             <h3>Ingredients</h3>
             {% block ingredients %}
-                <ul>
-                    {% for ingredient in recipe.ingredients %}
-                        <li>{{ ingredient.content }}</li>
-                    {% endfor %}
-                </ul>
+                {% if ingredients %}
+                    <ul>
+                        {% for ingredient in recipe.ingredients %}
+                            <li>{{ ingredient.content }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>This recipe doesn't include any ingredients yet.</p>
+                {% endif %}
             {% endblock ingredients %}
         </div>
 
         <div class="instructions">
             <h3>Preparation</h3>
             {% block instructions %}
-                <ol>
-                    {% for instruction in recipe.instructions %}
-                        <li>{{ instruction.content }}</li>
-                    {% endfor %}
-                </ol>
+                {% if instructions %}
+                    <ol>
+                        {% for instruction in recipe.instructions %}
+                            <li>{{ instruction.content }}</li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    This recipe doesn't have any preparation steps yet.
+                {% endif %}
             {% endblock instructions %}
         </div>
     </div>
