@@ -18,8 +18,8 @@
                     {% if recipe.is_author %}
                         <li>
                             <a href="/recipe/{{ recipe.id }}/edit"
-                                ><button>Edit recipe</button></a
-                            >
+                                ><button>Edit recipe</button>
+                            </a>
                         </li>
                     {% endif %}
                     {% if session.user_id %}
@@ -63,6 +63,7 @@
                     </p>
                 {% endif %}
             {% endblock tags %}
+            <p>Last modified: {{ recipe.updated_at }}</p>
         </div>
 
         <div class="ingredients">

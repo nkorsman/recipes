@@ -7,7 +7,9 @@ CREATE TABLE Users (
 CREATE TABLE Recipes (
     id INTEGER PRIMARY KEY,
     title TEXT,
-    author_id INTEGER REFERENCES Users ON DELETE CASCADE
+    author_id INTEGER REFERENCES Users ON DELETE CASCADE,
+    created_at TEXT,
+    updated_at TEXT
 );
 
 CREATE TABLE Tags (

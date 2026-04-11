@@ -31,14 +31,15 @@ def get_recipes(tag_id=None, user_id=None, favorited_by=None):
 
 
 def get_recipe(recipe_id, viewer_id=None):
-    sql = "SELECT title, author_id FROM Recipes WHERE id = ?"
+    sql = """SELECT id, title, created_at, updated_at, author_id
+             FROM Recipes
+             WHERE id = ?"""
     result = database.query_db(sql, [recipe_id], one=True)
     if result is None:
         return None
 
-    recipe = {"id": recipe_id, "title": result[0]}
-
-    recipe["is_author"] = viewer_id == result[1]
+    recipe = dict(result)
+    recipe["is_author"] = viewer_id == recipe["author_id"]
 
     sql = "SELECT id FROM UserFavorites WHERE recipe_id = ? AND user_id = ?"
     result = database.query_db(sql, [recipe_id, viewer_id], one=True)
@@ -99,7 +100,7 @@ def new_recipe(author_id, title):
         return None, errors
 
     db = database.get_db()
-    sql = "INSERT INTO Recipes (title, author_id) VALUES (?, ?)"
+    sql = "INSERT INTO Recipes (title, author_id, created_at, updated_at) VALUES (?, ?, DATETIME('now'), DATETIME('now'))"
     result = db.execute(sql, [title, author_id])
     db.commit()
     return result.lastrowid, None
@@ -111,7 +112,7 @@ def rename_recipe(recipe_id, title):
         return errors
 
     db = database.get_db()
-    sql = "UPDATE Recipes SET title = ? WHERE id = ?"
+    sql = "UPDATE Recipes SET title = ?, updated_at = DATETIME('now') WHERE id = ?"
     db.execute(sql, [title, recipe_id])
     db.commit()
 
@@ -162,6 +163,9 @@ def save_ingredients(recipe_id, ingredients):
                  VALUES (?, ?, ?)"""
         db.execute(sql, [ingredient, i, recipe_id])
 
+    sql = "UPDATE Recipes SET updated_at = DATETIME('now') WHERE id = ?"
+    db.execute(sql, [recipe_id])
+
     if not errors:
         db.commit()
 
@@ -182,6 +186,9 @@ def save_instructions(recipe_id, instructions):
                  (content, instruction_number, recipe_id)
                  VALUES (?, ?, ?)"""
         db.execute(sql, [instruction, i, recipe_id])
+
+    sql = "UPDATE Recipes SET updated_at = DATETIME('now') WHERE id = ?"
+    db.execute(sql, [recipe_id])
 
     if not errors:
         db.commit()
