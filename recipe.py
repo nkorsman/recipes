@@ -27,6 +27,8 @@ def get_recipes(tag_id=None, user_id=None, favorited_by=None):
     if conditions:
         sql += "\nWHERE " + " AND ".join(conditions)
 
+    sql += "\nORDER BY R.updated_at DESC"
+
     return database.query_db(sql, parameters)
 
 
