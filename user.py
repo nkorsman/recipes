@@ -25,12 +25,12 @@ def get_id(username):
 
 
 def get_user(id):
-    sql = "SELECT username FROM Users WHERE id = ?"
+    sql = "SELECT id, username FROM Users WHERE id = ?"
     result = database.query_db(sql, [id], one=True)
     if result is None:
         return None
 
-    user = {"id": id, "name": result[0]}
+    user = dict(result)
     user["authored_recipes"] = recipe.get_recipes(user_id=id)
     user["favorite_recipes"] = recipe.get_recipes(favorited_by=id)
 

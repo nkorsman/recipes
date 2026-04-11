@@ -3,12 +3,12 @@ import recipe
 
 
 def get_tag(id):
-    sql = "SELECT name FROM Tags WHERE id = ?"
+    sql = "SELECT id, name FROM Tags WHERE id = ?"
     result = database.query_db(sql, [id], one=True)
     if result is None:
         return None
 
-    tag = {"id": id, "name": result[0]}
+    tag = dict(result)
     tag["recipes"] = recipe.get_recipes(tag_id=id)
 
     return tag
