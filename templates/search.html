@@ -1,3 +1,4 @@
+{% from "macros.html" import recipe_list %}
 {% extends "layout.html" %}
 {% block title %}Search{% endblock %}
 {% block content %}
@@ -14,5 +15,5 @@
         </p>
     </form>
 
-    {% if query %}{% include "recipelist.html" %}{% endif %}
+    {% if query %}{{ recipe_list(recipes) }}{% endif %}
 {% endblock %}
