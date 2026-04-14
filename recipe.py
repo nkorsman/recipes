@@ -1,7 +1,7 @@
 import database
 
 
-def get_recipes(tag_id=None, user_id=None, favorited_by=None):
+def get_recipes(tag_id=None, user_id=None, favorited_by=None, published=True):
     sql = """SELECT R.id, R.title, U.username
              FROM Recipes R
              JOIN Users U ON U.id = R.author_id"""
@@ -22,6 +22,9 @@ def get_recipes(tag_id=None, user_id=None, favorited_by=None):
         conditions.append("F.user_id = ?")
         parameters.append(favorited_by)
 
+    conditions.append("R.is_draft = ?")
+    parameters.append(not published)
+
     if joins:
         sql += "\n" + "\n".join(joins)
     if conditions:
@@ -33,7 +36,7 @@ def get_recipes(tag_id=None, user_id=None, favorited_by=None):
 
 
 def get_recipe(recipe_id, viewer_id=None):
-    sql = """SELECT id, title, created_at, updated_at, author_id
+    sql = """SELECT id, title, created_at, updated_at, author_id, is_draft
              FROM Recipes
              WHERE id = ?"""
     result = database.query_db(sql, [recipe_id], one=True)
@@ -41,7 +44,6 @@ def get_recipe(recipe_id, viewer_id=None):
         return None
 
     recipe = dict(result)
-    recipe["is_author"] = viewer_id == recipe["author_id"]
 
     sql = "SELECT id FROM UserFavorites WHERE recipe_id = ? AND user_id = ?"
     result = database.query_db(sql, [recipe_id, viewer_id], one=True)
@@ -102,7 +104,8 @@ def new_recipe(author_id, title):
         return None, errors
 
     db = database.get_db()
-    sql = "INSERT INTO Recipes (title, author_id, created_at, updated_at) VALUES (?, ?, DATETIME('now'), DATETIME('now'))"
+    sql = """INSERT INTO Recipes (title, author_id, created_at, updated_at, is_draft)
+             VALUES (?, ?, DATETIME('now'), DATETIME('now'), 1)"""
     result = db.execute(sql, [title, author_id])
     db.commit()
     return result.lastrowid, None
@@ -196,6 +199,20 @@ def save_instructions(recipe_id, instructions):
         db.commit()
 
     return errors
+
+
+def publish_recipe(recipe_id):
+    db = database.get_db()
+    sql = "UPDATE Recipes SET is_draft = 0 WHERE id = ?"
+    db.execute(sql, [recipe_id])
+    db.commit()
+
+
+def unpublish_recipe(recipe_id):
+    db = database.get_db()
+    sql = "UPDATE Recipes SET is_draft = 1 WHERE id = ?"
+    db.execute(sql, [recipe_id])
+    db.commit()
 
 
 def favorite_recipe(recipe_id, user_id):

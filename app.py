@@ -128,10 +128,17 @@ def new_recipe():
 
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
-    user_id = session["user_id"] if "user_id" in session else None
+    user_id = user_id = session["user_id"] if "user_id" in session else None
     r = recipe.get_recipe(recipe_id, user_id)
     if r is None:
         abort(404, "This recipe could not be found.")
+
+    r["is_author"] = user_id == r["author_id"]
+    if r["is_draft"]:
+        if r["is_author"]:
+            flash("You are currently previewing an unpublished recipe.", "info")
+        else:
+            abort(403, "You do not have permission to view this recipe.")
 
     return render_template("recipe.html", recipe=r)
 
@@ -148,10 +155,13 @@ def show_tag(tag_name):
 
 @app.route("/user/<username>")
 def show_user(username):
+    viewer_id = user_id = session["user_id"] if "user_id" in session else None
     user_id = user.get_id(username)
     u = user.get_user(user_id)
     if u is None:
         abort(404, "This user could not be found.")
+
+    u["is_owner"] = user_id == viewer_id
 
     return render_template("user.html", user=u)
 
@@ -176,6 +186,20 @@ def favorite_recipe(recipe_id):
 def edit_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
     return render_template("edit/edit.html", recipe=r)
+
+
+@app.route("/recipe/<int:recipe_id>/edit/publish", methods=["POST"])
+@login_required
+@recipe_owner_required
+def publish_recipe(recipe_id):
+    action = request.form["action"]
+
+    if action == "publish":
+        recipe.publish_recipe(recipe_id)
+    elif action == "unpublish":
+        recipe.unpublish_recipe(recipe_id)
+
+    return redirect(f"/recipe/{recipe_id}/edit")
 
 
 @app.route("/recipe/<int:recipe_id>/edit/ingredients", methods=["GET", "POST"])
