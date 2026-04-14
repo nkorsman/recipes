@@ -65,7 +65,7 @@
         <div class="ingredients">
             <h3>Ingredients</h3>
             {% block ingredients %}
-                {% if ingredients %}
+                {% if recipe.ingredients %}
                     <ul>
                         {% for ingredient in recipe.ingredients %}
                             <li>{{ ingredient.content }}</li>
@@ -80,7 +80,7 @@
         <div class="instructions">
             <h3>Preparation</h3>
             {% block instructions %}
-                {% if instructions %}
+                {% if recipe.instructions %}
                     <ol>
                         {% for instruction in recipe.instructions %}
                             <li>{{ instruction.content }}</li>

@@ -279,7 +279,7 @@ def rename_recipe(recipe_id):
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
-@app.route("/recipe/<int:recipe_id>/edit/tags", methods=["GET", "POST"])
+@app.route("/recipe/<int:recipe_id>/edit/tags", methods=["POST"])
 @login_required
 @recipe_owner_required
 def edit_tags(recipe_id):
@@ -287,21 +287,16 @@ def edit_tags(recipe_id):
     if r is None:
         abort(404, "Recipe could not be found.")
 
-    if request.method == "GET":
-        return render_template("edit/tags.html", recipe=r)
-
     parts = request.form["action"].split(":")
     action = parts[0]
 
-    if action == "done":
-        return redirect(f"/recipe/{recipe_id}/edit")
-    elif action == "new":
+    if action == "new":
         tag.tag_recipe(recipe_id, request.form["new_tag"])
     elif action == "remove":
         tag_id = r["tags"][int(parts[1])]["id"]
         tag.untag_recipe(recipe_id, tag_id)
 
-    return redirect(f"/recipe/{recipe_id}/edit/tags")
+    return redirect(f"/recipe/{recipe_id}/edit")
 
 
 @app.route("/recipe/<int:recipe_id>/edit/delete", methods=["POST"])
