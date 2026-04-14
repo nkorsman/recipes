@@ -2,6 +2,15 @@ import database
 import recipe
 
 
+def get_tags():
+    sql = """SELECT T.name, COUNT(R.id) AS recipe_count
+             FROM Tags T
+             JOIN RecipeTags R ON R.tag_id = T.id
+             GROUP BY T.id
+             ORDER BY recipe_count desc"""
+    return database.query_db(sql)
+
+
 def get_tag(id):
     sql = "SELECT id, name FROM Tags WHERE id = ?"
     result = database.query_db(sql, [id], one=True)

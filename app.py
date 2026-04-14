@@ -46,7 +46,8 @@ def error(e):
 @app.route("/")
 def index():
     recipes = recipe.get_recipes()
-    return render_template("index.html", recipes=recipes)
+    tags = tag.get_tags()
+    return render_template("index.html", recipes=recipes, tags=tags)
 
 
 @app.route("/search")
