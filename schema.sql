@@ -7,14 +7,27 @@ CREATE TABLE Users (
 CREATE TABLE Recipes (
     id INTEGER PRIMARY KEY,
     title TEXT,
+    description TEXT,
+    image_data BLOB,
     author_id INTEGER REFERENCES Users ON DELETE CASCADE,
     created_at TEXT,
-    updated_at TEXT
+    updated_at TEXT,
+    is_draft INTEGER
 );
 
 CREATE TABLE Tags (
     id INTEGER PRIMARY KEY,
     name TEXT
+);
+
+CREATE TABLE Reviews (
+    id INTEGER PRIMARY KEY,
+    rating INTEGER,
+    content TEXT,
+    user_id INTEGER REFERENCES Users ON DELETE CASCADE,
+    recipe_id INTEGER REFERENCES Recipes ON DELETE CASCADE,
+    created_at TEXT,
+    updated_at TEXT
 );
 
 CREATE TABLE RecipeIngredients (
