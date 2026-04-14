@@ -32,7 +32,6 @@
             </ul>
         </nav>
         <hr />
-        <h2>{{ self.title() }}</h2>
         {% for category, message in get_flashed_messages(with_categories=true) %}
             {% if category == "error" %}
                 <p>
