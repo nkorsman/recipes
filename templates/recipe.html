@@ -8,7 +8,11 @@
 
 {% block content %}
     <div class="recipe">
-        <h2>{{ recipe.title }}</h2>
+        <div class="title">
+            {% block recipe_title %}
+                <h2 class="title">{{ recipe.title }}</h2>
+            {% endblock recipe_title %}
+        </div>
         <div class="actions">
             <ul>
                 {% block actions %}
@@ -92,5 +96,31 @@
                 {% endif %}
             {% endblock instructions %}
         </div>
+    </div>
+    <div class="Reviews">
+        <h3>Reviews</h3>
+        <form method="post" action="/recipe/{{ recipe.id }}/reviews/add">
+            <p>Rating:</p>
+            <select name="rating">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <br />
+            <p>Comment:</p>
+            <textarea name="comment"></textarea>
+            <br />
+            <button type="submit">Submit</button>
+        </form>
+        {% for review in recipe.reviews %}
+            <p>
+                <b>Review from {{ review.username }}</b> <br />
+                <i>{{ review.created_at }}</i> <br />
+                Rating: {{ review.rating }} <br />
+                Comment: {{ review.content }}
+            </p>
+        {% endfor %}
     </div>
 {% endblock content %}

@@ -1,5 +1,9 @@
 {% extends "edit/edit.html" %}
 
+{% block title %}
+    Edit instructions
+{% endblock title %}
+
 {% block instructions %}
     <form method="post">
         {% for instruction in instructions %}

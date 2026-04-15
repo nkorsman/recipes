@@ -8,6 +8,23 @@
     <li>
         <a href="/recipe/{{ recipe.id }}"><button>View recipe</button></a><br />
     </li>
+    {% if recipe.is_draft %}
+        <li>
+            <form method="post" action="/recipe/{{ recipe.id }}/edit/publish">
+                <button type="submit" name="action" value="publish">
+                    Publish recipe
+                </button>
+            </form>
+        </li>
+    {% else %}
+        <li>
+            <form method="post" action="/recipe/{{ recipe.id }}/edit/publish">
+                <button type="submit" name="action" value="unpublish">
+                    Unpublish recipe
+                </button>
+            </form>
+        </li>
+    {% endif %}
     <li>
         <a href="/recipe/{{ recipe.id }}/edit/rename"
             ><button>Rename recipe</button></a

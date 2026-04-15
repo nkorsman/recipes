@@ -64,6 +64,13 @@ def get_recipe(recipe_id, viewer_id=None):
     sql = "SELECT T.id, T.name FROM Tags T, RecipeTags R WHERE R.recipe_id = ? AND T.id = R.tag_id"
     recipe["tags"] = database.query_db(sql, [recipe_id])
 
+    sql = """SELECT U.username, R.rating, R.content, R.created_at
+             FROM Reviews R
+             JOIN Users U on U.id = R.user_id
+             WHERE R.recipe_id = ?
+             ORDER BY R.created_at"""
+    recipe["reviews"] = database.query_db(sql, [recipe_id])
+
     return recipe
 
 

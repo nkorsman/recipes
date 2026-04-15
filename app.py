@@ -5,6 +5,7 @@ from flask import Flask, abort, flash, redirect, render_template, request, sessi
 import config
 import database
 import recipe
+import review
 import tag
 import user
 
@@ -330,3 +331,21 @@ def edit_tags(recipe_id):
 def delete_recipe(recipe_id):
     recipe.delete_recipe(recipe_id)
     return redirect("/")
+
+
+@app.route("/recipe/<int:recipe_id>/reviews/add", methods=["POST"])
+@login_required
+def review_recipe(recipe_id):
+    user_id = session["user_id"]
+    if request.form["rating"]:
+        rating = int(request.form["rating"])
+    else:
+        rating = None
+
+    if request.form["comment"]:
+        comment = request.form["comment"]
+    else:
+        comment = None
+
+    review.leave_review(recipe_id, user_id, rating, comment)
+    return redirect(f"/recipe/{recipe_id}")
