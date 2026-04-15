@@ -134,7 +134,9 @@ def show_recipe(recipe_id):
     if r is None:
         abort(404, "This recipe could not be found.")
 
-    r["is_author"] = user_id == r["author_id"]
+    r["is_author"] = user.is_recipe_author(user_id, recipe_id)
+    r["is_favorite"] = user.is_recipe_favorite(user_id, recipe_id)
+
     if r["is_draft"]:
         if r["is_author"]:
             flash("You are currently previewing an unpublished recipe.", "info")
@@ -347,5 +349,7 @@ def review_recipe(recipe_id):
     else:
         comment = None
 
-    review.leave_review(recipe_id, user_id, rating, comment)
+    error = review.leave_review(recipe_id, user_id, rating, comment)
+    if error:
+        flash(error, "error")
     return redirect(f"/recipe/{recipe_id}")

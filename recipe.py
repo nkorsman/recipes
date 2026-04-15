@@ -45,10 +45,6 @@ def get_recipe(recipe_id, viewer_id=None):
 
     recipe = dict(result)
 
-    sql = "SELECT id FROM UserFavorites WHERE recipe_id = ? AND user_id = ?"
-    result = database.query_db(sql, [recipe_id, viewer_id], one=True)
-    recipe["is_favorite"] = result is not None
-
     sql = """SELECT id, content, ingredient_number
              FROM RecipeIngredients
              WHERE recipe_id = ?

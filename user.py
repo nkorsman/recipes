@@ -20,6 +20,18 @@ def get_user(id):
     return user
 
 
+def is_recipe_favorite(user_id, recipe_id):
+    sql = "SELECT id FROM UserFavorites WHERE recipe_id = ? AND user_id = ?"
+    result = database.query_db(sql, [recipe_id, user_id], one=True)
+    return result is not None
+
+
+def is_recipe_author(user_id, recipe_id):
+    sql = "SELECT id FROM Recipes WHERE id = ? AND author_id = ?"
+    result = database.query_db(sql, [recipe_id, user_id], one=True)
+    return result is not None
+
+
 def new_user(username, password):
     db = database.get_db()
     password_hash = generate_password_hash(password)
