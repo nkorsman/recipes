@@ -35,10 +35,11 @@ def get_recipes(tag_id=None, user_id=None, favorited_by=None, published=True):
     return database.query_db(sql, parameters)
 
 
-def get_recipe(recipe_id, viewer_id=None):
-    sql = """SELECT id, title, created_at, updated_at, author_id, is_draft
-             FROM Recipes
-             WHERE id = ?"""
+def get_recipe(recipe_id):
+    sql = """SELECT R.id, title, created_at, updated_at, U.username AS author, author_id, is_draft
+             FROM Recipes R
+             JOIN Users U on U.id = author_id
+             WHERE R.id = ?"""
     result = database.query_db(sql, [recipe_id], one=True)
     if result is None:
         return None

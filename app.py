@@ -130,7 +130,7 @@ def new_recipe():
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
     user_id = user_id = session["user_id"] if "user_id" in session else None
-    r = recipe.get_recipe(recipe_id, user_id)
+    r = recipe.get_recipe(recipe_id)
     if r is None:
         abort(404, "This recipe could not be found.")
 
