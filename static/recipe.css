@@ -5,10 +5,7 @@ li {
 .recipe {
     display: grid;
     grid-template-columns: 1fr 2fr;
-}
-
-.title {
-    grid-column: 1;
+    column-gap: 2em;
 }
 
 .title input {
@@ -20,14 +17,32 @@ li {
     grid-column: 1;
 }
 
-.tags {
+.actions ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    margin: 0;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0.5em;
+}
+
+.actions button {
+    width: 100%;
+}
+
+.info {
     grid-column: 2;
 }
 
-ingredients {
+.ingredients {
     grid-column: 1;
 }
 
 .instructions {
     grid-column: 2;
+}
+
+.review {
+    padding: 0.5em;
+    margin: 1em;
 }

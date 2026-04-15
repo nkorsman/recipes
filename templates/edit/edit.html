@@ -39,23 +39,20 @@
 
 {% block tags %}
     <form method="post" action="/recipe/{{ recipe.id }}/edit/tags">
-        <p>
-            {% if recipe.tags %}
-                Tags:
-                {% for tag in recipe.tags %}
-                    {{ tag.name }}
-                    (<button
-                        type="submit"
-                        name="action"
-                        value="remove:{{ loop.index0 }}"
-                    >
-                        x</button
-                    >)
-                {% endfor %}
-            {% else %}
-                No tags.
-            {% endif %}
-        </p>
+        {% if recipe.tags %}
+            It has the following tags:
+            {% for tag in recipe.tags %}
+                {{ tag.name }}
+                (<button
+                    type="submit"
+                    name="action"
+                    value="remove:{{ loop.index0 }}"
+                >
+                    x</button
+                >)
+            {% endfor %}
+        {% endif %}
+        <br /><br />
         <input type="text" placeholder="New tag" name="new_tag" />
         <button type="submit" name="action" value="new">Add tag</button>
     </form>

@@ -3,10 +3,20 @@ body {
     max-width: 900px;
     font-family: Palatino, Georgia, serif;
     line-height: 1.5;
+    background-color: oldlace;
 }
 
 a {
-    color: maroon;
+    color: saddlebrown;
+}
+
+button {
+    background-color: saddlebrown;
+    color: white;
+    border: none;
+    padding: 0.5em;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
 nav {
@@ -30,4 +40,15 @@ nav li {
 
 nav li:not(:last-of-type) {
     border-right: 1px solid black;
+}
+
+.message {
+    background-color: steelblue;
+    color: white;
+    padding: 0.6em;
+    margin: 1em auto;
+}
+
+.message.error {
+    background-color: firebrick;
 }

@@ -7,12 +7,12 @@
 {% endblock %}
 
 {% block content %}
+    <div class="title">
+        {% block recipe_title %}
+            <h2 class="title">{{ recipe.title }}</h2>
+        {% endblock recipe_title %}
+    </div>
     <div class="recipe">
-        <div class="title">
-            {% block recipe_title %}
-                <h2 class="title">{{ recipe.title }}</h2>
-            {% endblock recipe_title %}
-        </div>
         <div class="actions">
             <ul>
                 {% block actions %}
@@ -53,18 +53,18 @@
             </ul>
         </div>
 
-        <div class="tags">
+        <div class="info">
+            This recipe is by user
+            <a href="/user/{{ recipe.author }}">{{ recipe.author }}</a>. It was
+            last modified at {{ recipe.updated_at }}.
             {% block tags %}
                 {% if recipe.tags %}
-                    <p>
-                        Tags:
-                        {% for tag in recipe.tags %}
-                            <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
-                        {% endfor %}
-                    </p>
+                    This recipe has the following tags:
+                    {% for tag in recipe.tags %}
+                        <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
+                    {% endfor %}
                 {% endif %}
             {% endblock tags %}
-            <p>Last modified: {{ recipe.updated_at }}</p>
         </div>
 
         <div class="ingredients">
@@ -121,12 +121,12 @@
                 </form>
             {% endif %}
             {% for review in recipe.reviews %}
-                <p>
+                <div class="review">
                     <b>Review from {{ review.username }}</b> <br />
                     <i>{{ review.created_at }}</i> <br />
                     Rating: {{ review.rating }} <br />
                     Comment: {{ review.content }}
-                </p>
+                </div>
             {% endfor %}
         </div>
     {% endblock reviews %}

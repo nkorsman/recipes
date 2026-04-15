@@ -33,15 +33,7 @@
         </nav>
         <hr />
         {% for category, message in get_flashed_messages(with_categories=true) %}
-            {% if category == "error" %}
-                <p>
-                    <b>ERROR: {{ message }}</b>
-                </p>
-            {% else %}
-                <p>
-                    <b>{{ message }}</b>
-                </p>
-            {% endif %}
+            <div class="message {{ category }}">{{ message }}</div>
         {% endfor %}
         {% block content %}
         {% endblock %}
