@@ -38,17 +38,16 @@ def login_required(f):
     return decorated_function
 
 
-def recipe_owner_required(f):
-    @wraps(f)
-    def decorated_function(recipe_id, *args, **kwargs):
-        author_id = recipes.get_author(recipe_id)
-        if author_id is None:
-            abort(404, "Recipe could not be found.")
-        if author_id != session["user_id"]:
-            abort(403, "You do not have permission to edit this recipe.")
-        return f(recipe_id, *args, **kwargs)
+def get_recipe_or_404(recipe_id):
+    recipe = recipes.get_recipe(recipe_id)
+    if recipe is None:
+        abort(404, "Recipe could not be found.")
+    return recipe
 
-    return decorated_function
+
+def require_recipe_author(recipe_id):
+    if not users.is_recipe_author(session["user_id"], recipe_id):
+        abort(403, "You do not have permission to edit this recipe.")
 
 
 @app.errorhandler(404)
@@ -150,10 +149,8 @@ def new_recipe():
 
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
-    user_id = session["user_id"] if "user_id" in session else None
-    recipe = recipes.get_recipe(recipe_id)
-    if recipe is None:
-        abort(404, "This recipe could not be found.")
+    user_id = session.get("user_id")
+    recipe = get_recipe_or_404(recipe_id)
 
     recipe["is_author"] = users.is_recipe_author(user_id, recipe_id)
     recipe["is_favorite"] = users.is_recipe_favorite(user_id, recipe_id)
@@ -179,7 +176,7 @@ def show_tag(tag_name):
 
 @app.route("/user/<username>")
 def show_user(username):
-    viewer_id = session["user_id"] if "user_id" in session else None
+    viewer_id = session.get("user_id")
     user_id = users.get_id(username)
     user = users.get_user(user_id)
     if user is None:
@@ -208,11 +205,8 @@ def favorite_recipe(recipe_id):
 @app.route("/recipe/<int:recipe_id>/edit", methods=["GET"])
 @login_required
 def edit_recipe(recipe_id):
-    recipe = recipes.get_recipe(recipe_id)
-    if recipe is None:
-        abort(404, "This recipe could not be found.")
-    if not users.is_recipe_author(session["user_id"], recipe_id):
-        abort(403, "You do not have permission to edit this recipe.")
+    recipe = get_recipe_or_404(recipe_id)
+    require_recipe_author(recipe_id)
 
     return render_template("edit/edit.html", recipe=recipe)
 
@@ -220,13 +214,9 @@ def edit_recipe(recipe_id):
 @app.route("/recipe/<int:recipe_id>/edit/publish", methods=["POST"])
 @login_required
 @csrf_required
-@recipe_owner_required
 def publish_recipe(recipe_id):
-    recipe = recipes.get_recipe(recipe_id)
-    if recipe is None:
-        abort(404, "This recipe could not be found.")
-    if not users.is_recipe_author(session["user_id"], recipe_id):
-        abort(403, "You do not have permission to edit this recipe.")
+    get_recipe_or_404(recipe_id)
+    require_recipe_author(recipe_id)
 
     action = request.form["action"]
 
@@ -241,11 +231,9 @@ def publish_recipe(recipe_id):
 @app.route("/recipe/<int:recipe_id>/edit/ingredients", methods=["GET", "POST"])
 @login_required
 @csrf_required
-@recipe_owner_required
 def edit_ingredients(recipe_id):
-    recipe = recipes.get_recipe(recipe_id)
-    if recipe is None:
-        abort(404, "Recipe could not be found.")
+    recipe = get_recipe_or_404(recipe_id)
+    require_recipe_author(recipe_id)
 
     if request.method == "GET":
         if recipe["ingredients"]:
@@ -282,19 +270,17 @@ def edit_ingredients(recipe_id):
 @app.route("/recipe/<int:recipe_id>/edit/instructions", methods=["GET", "POST"])
 @login_required
 @csrf_required
-@recipe_owner_required
 def edit_instructions(recipe_id):
-    r = recipes.get_recipe(recipe_id)
-    if r is None:
-        abort(404, "Recipe could not be found.")
+    recipe = get_recipe_or_404(recipe_id)
+    require_recipe_author(recipe_id)
 
     if request.method == "GET":
-        if r["instructions"]:
-            instructions = [i["content"] for i in r["instructions"]]
+        if recipe["instructions"]:
+            instructions = [i["content"] for i in recipe["instructions"]]
         else:
             instructions = [""]
         return render_template(
-            "edit/instructions.html", recipe=r, instructions=instructions
+            "edit/instructions.html", recipe=recipe, instructions=instructions
         )
 
     parts = request.form["action"].split(":")
@@ -316,18 +302,17 @@ def edit_instructions(recipe_id):
             return redirect(f"/recipe/{recipe_id}/edit")
 
     return render_template(
-        "edit/instructions.html", recipe=r, instructions=instructions
+        "edit/instructions.html", recipe=recipe, instructions=instructions
     )
 
 
 @app.route("/recipe/<int:recipe_id>/edit/rename", methods=["GET", "POST"])
 @login_required
 @csrf_required
-@recipe_owner_required
 def rename_recipe(recipe_id):
-    recipe = recipes.get_recipe(recipe_id)
-    if recipe is None:
-        abort(404, "Recipe could not be found.")
+    recipe = get_recipe_or_404(recipe_id)
+    require_recipe_author(recipe_id)
+
     if request.method == "GET":
         title = recipe["title"]
         return render_template("edit/rename.html", recipe=recipe, title=title)
@@ -348,11 +333,9 @@ def rename_recipe(recipe_id):
 @app.route("/recipe/<int:recipe_id>/edit/tags", methods=["POST"])
 @login_required
 @csrf_required
-@recipe_owner_required
 def edit_tags(recipe_id):
-    recipe = recipes.get_recipe(recipe_id)
-    if recipe is None:
-        abort(404, "Recipe could not be found.")
+    recipe = get_recipe_or_404(recipe_id)
+    require_recipe_author(recipe_id)
 
     parts = request.form["action"].split(":")
     action = parts[0]
@@ -371,8 +354,8 @@ def edit_tags(recipe_id):
 @app.route("/recipe/<int:recipe_id>/edit/delete", methods=["POST"])
 @login_required
 @csrf_required
-@recipe_owner_required
 def delete_recipe(recipe_id):
+    require_recipe_author(recipe_id)
     recipes.delete_recipe(recipe_id)
     return redirect("/")
 
