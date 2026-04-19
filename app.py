@@ -228,82 +228,45 @@ def publish_recipe(recipe_id):
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
-@app.route("/recipe/<int:recipe_id>/edit/ingredients", methods=["GET", "POST"])
 @login_required
 @csrf_required
-def edit_ingredients(recipe_id):
+@app.route("/recipe/<int:recipe_id>/edit/<content_type>", methods=["GET", "POST"])
+def edit_content(recipe_id, content_type):
     recipe = get_recipe_or_404(recipe_id)
     require_recipe_author(recipe_id)
+    if content_type == "ingredients":
+        save_items = recipes.save_ingredients
+    elif content_type == "instructions":
+        save_items = recipes.save_instructions
+    else:
+        abort(404)
 
     if request.method == "GET":
-        if recipe["ingredients"]:
-            ingredients = [i["content"] for i in recipe["ingredients"]]
-        else:
-            ingredients = [""]
-        return render_template(
-            "edit/ingredients.html", recipe=recipe, ingredients=ingredients
-        )
+        items = [i["content"] for i in recipe[content_type]]
+        if not items:
+            items = [""]
+        return render_template(f"edit/{content_type}.html", recipe=recipe, items=items)
 
     parts = request.form["action"].split(":")
     action = parts[0]
-    ingredients = request.form.getlist("ingredient")
+    items = request.form.getlist("item")
 
     if action == "cancel":
         return redirect(f"/recipe/{recipe_id}/edit")
     elif action == "new":
-        ingredients.append("")
+        items.append("")
     elif action == "remove":
-        ingredients.pop(int(parts[1]))
+        index = int(parts[1])
+        items.pop(index)
     elif action == "save":
-        errors = recipes.save_ingredients(recipe_id, ingredients)
+        errors = save_items(recipe_id, items)
         if errors:
             for error in errors:
                 flash(error, "error")
         else:
             return redirect(f"/recipe/{recipe_id}/edit")
 
-    return render_template(
-        "edit/ingredients.html", recipe=recipe, ingredients=ingredients
-    )
-
-
-@app.route("/recipe/<int:recipe_id>/edit/instructions", methods=["GET", "POST"])
-@login_required
-@csrf_required
-def edit_instructions(recipe_id):
-    recipe = get_recipe_or_404(recipe_id)
-    require_recipe_author(recipe_id)
-
-    if request.method == "GET":
-        if recipe["instructions"]:
-            instructions = [i["content"] for i in recipe["instructions"]]
-        else:
-            instructions = [""]
-        return render_template(
-            "edit/instructions.html", recipe=recipe, instructions=instructions
-        )
-
-    parts = request.form["action"].split(":")
-    action = parts[0]
-    instructions = request.form.getlist("instruction")
-
-    if action == "cancel":
-        return redirect(f"/recipe/{recipe_id}/edit")
-    elif action == "new":
-        instructions.append("")
-    elif action == "remove":
-        instructions.pop(int(parts[1]))
-    elif action == "save":
-        errors = recipes.save_instructions(recipe_id, instructions)
-        if errors:
-            for error in errors:
-                flash(error, "error")
-        else:
-            return redirect(f"/recipe/{recipe_id}/edit")
-
-    return render_template(
-        "edit/instructions.html", recipe=recipe, instructions=instructions
-    )
+    return render_template(f"edit/{content_type}.html", recipe=recipe, items=items)
 
 
 @app.route("/recipe/<int:recipe_id>/edit/rename", methods=["GET", "POST"])

@@ -11,15 +11,15 @@
             name="csrf_token"
             value="{{ session.csrf_token }}"
         />
-        {% for instruction in instructions %}
+        {% for item in items %}
             <textarea
-                name="instruction"
+                name="item"
                 rows="4"
                 cols="60"
                 placeholder="Recipe step"
                 maxlength="1000"
             >
-{{ instruction }}</textarea
+{{ item }}</textarea
             >
             <button
                 type="submit"
