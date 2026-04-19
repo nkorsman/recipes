@@ -87,7 +87,7 @@ def register():
     if not errors:
         user_id = user.new_user(username, password1)
         if user_id:
-            flash(f"User {username} succesfully created", "success")
+            flash(f"User {username} successfully created", "success")
             session["user_id"] = user_id
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
@@ -101,6 +101,8 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if "user_id" in session:
+        abort(403, "You must log out first before you can log in.")
     if request.method == "GET":
         return render_template("login.html")
 
@@ -122,6 +124,8 @@ def login():
 @login_required
 def logout():
     del session["user_id"]
+    del session["username"]
+    del session["csrf_token"]
     return redirect("/")
 
 
@@ -146,7 +150,7 @@ def new_recipe():
 
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
-    user_id = user_id = session["user_id"] if "user_id" in session else None
+    user_id = session["user_id"] if "user_id" in session else None
     r = recipe.get_recipe(recipe_id)
     if r is None:
         abort(404, "This recipe could not be found.")
@@ -175,7 +179,7 @@ def show_tag(tag_name):
 
 @app.route("/user/<username>")
 def show_user(username):
-    viewer_id = user_id = session["user_id"] if "user_id" in session else None
+    viewer_id = session["user_id"] if "user_id" in session else None
     user_id = user.get_id(username)
     u = user.get_user(user_id)
     if u is None:
@@ -342,7 +346,9 @@ def edit_tags(recipe_id):
     action = parts[0]
 
     if action == "new":
-        tag.tag_recipe(recipe_id, request.form["new_tag"])
+        errors = tag.tag_recipe(recipe_id, request.form["new_tag"])
+        for error in errors:
+            flash(error, "error")
     elif action == "remove":
         tag_id = r["tags"][int(parts[1])]["id"]
         tag.untag_recipe(recipe_id, tag_id)

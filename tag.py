@@ -60,6 +60,7 @@ def tag_recipe(recipe_id, tag_name):
     sql = "INSERT INTO RecipeTags (recipe_id, tag_id) VALUES (?, ?)"
     db.execute(sql, [recipe_id, tag_id])
     db.commit()
+    return []
 
 
 def untag_recipe(recipe_id, tag_id):
