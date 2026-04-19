@@ -15,7 +15,7 @@ def get_user(id):
     user = dict(result)
     user["authored_recipes"] = recipe.get_recipes(user_id=id)
     user["favorite_recipes"] = recipe.get_recipes(favorited_by=id)
-    user["draft_recipes"] = recipe.get_recipes(published=False)
+    user["draft_recipes"] = recipe.get_recipes(user_id=id, published=False)
 
     return user
 

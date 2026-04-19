@@ -82,9 +82,10 @@ def search_recipes(query):
     sql = """SELECT DISTINCT R.id, R.title, U.username
              FROM Recipes R
              JOIN Users U ON U.id = R.author_id
-             JOIN RecipeIngredients G ON G.recipe_id = R.id
-             JOIN RecipeInstructions S ON S.recipe_id = R.id
-             WHERE R.title LIKE ?
+             LEFT JOIN RecipeIngredients G ON G.recipe_id = R.id
+             LEFT JOIN RecipeInstructions S ON S.recipe_id = R.id
+             WHERE R.is_draft = 0
+             AND R.title LIKE ?
              OR G.content LIKE ?
              OR S.content LIKE ?"""
     return database.query_db(sql, [query, query, query])
