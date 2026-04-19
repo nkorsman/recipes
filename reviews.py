@@ -1,9 +1,9 @@
 import database
-import user
+import users
 
 
 def leave_review(recipe_id, user_id, rating=None, comment=None):
-    if user.is_recipe_author(user_id, recipe_id):
+    if users.is_recipe_author(user_id, recipe_id):
         return "You may not review your own recipe."
 
     db = database.get_db()

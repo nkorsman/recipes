@@ -1,5 +1,5 @@
 import database
-import recipe
+import recipes
 
 
 def get_tags():
@@ -18,7 +18,7 @@ def get_tag(id):
         return None
 
     tag = dict(result)
-    tag["recipes"] = recipe.get_recipes(tag_id=id)
+    tag["recipes"] = recipes.get_recipes(tag_id=id)
 
     return tag
 

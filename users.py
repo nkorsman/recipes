@@ -3,7 +3,7 @@ import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import database
-import recipe
+import recipes
 
 
 def get_user(id):
@@ -13,9 +13,9 @@ def get_user(id):
         return None
 
     user = dict(result)
-    user["authored_recipes"] = recipe.get_recipes(user_id=id)
-    user["favorite_recipes"] = recipe.get_recipes(favorited_by=id)
-    user["draft_recipes"] = recipe.get_recipes(user_id=id, published=False)
+    user["authored_recipes"] = recipes.get_recipes(user_id=id)
+    user["favorite_recipes"] = recipes.get_recipes(favorited_by=id)
+    user["draft_recipes"] = recipes.get_recipes(user_id=id, published=False)
 
     return user
 
