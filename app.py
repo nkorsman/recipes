@@ -1,3 +1,4 @@
+import secrets
 from functools import wraps
 
 from flask import Flask, abort, flash, redirect, render_template, request, session
@@ -14,11 +15,24 @@ app.teardown_appcontext(database.close_db)
 app.secret_key = config.secret_key
 
 
+def csrf_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if request.method == "POST":
+            if "csrf_token" not in request.form:
+                abort(401, "CSRF token missing")
+            elif request.form["csrf_token"] != session["csrf_token"]:
+                abort(403, "Invalid CSRF token.")
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if "user_id" not in session:
-            return abort(401, "You must be logged in to perform this action.")
+            abort(401, "You must be logged in to perform this action.")
         return f(*args, **kwargs)
 
     return decorated_function
@@ -76,6 +90,7 @@ def register():
             flash(f"User {username} succesfully created", "success")
             session["user_id"] = user_id
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         errors.append("Username is already taken")
 
@@ -99,6 +114,7 @@ def login():
 
     session["user_id"] = user_id
     session["username"] = username
+    session["csrf_token"] = secrets.token_hex(16)
     return redirect("/")
 
 
@@ -111,6 +127,7 @@ def logout():
 
 @app.route("/new", methods=["GET", "POST"])
 @login_required
+@csrf_required
 def new_recipe():
     if request.method == "GET":
         return render_template("new.html")
@@ -171,6 +188,7 @@ def show_user(username):
 
 @app.route("/recipe/<int:recipe_id>/favorite", methods=["POST"])
 @login_required
+@csrf_required
 def favorite_recipe(recipe_id):
     user_id = session["user_id"]
     action = request.form["action"]
@@ -193,6 +211,7 @@ def edit_recipe(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/edit/publish", methods=["POST"])
 @login_required
+@csrf_required
 @recipe_owner_required
 def publish_recipe(recipe_id):
     action = request.form["action"]
@@ -207,6 +226,7 @@ def publish_recipe(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/edit/ingredients", methods=["GET", "POST"])
 @login_required
+@csrf_required
 @recipe_owner_required
 def edit_ingredients(recipe_id):
     r = recipe.get_recipe(recipe_id)
@@ -245,6 +265,7 @@ def edit_ingredients(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/edit/instructions", methods=["GET", "POST"])
 @login_required
+@csrf_required
 @recipe_owner_required
 def edit_instructions(recipe_id):
     r = recipe.get_recipe(recipe_id)
@@ -285,6 +306,7 @@ def edit_instructions(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/edit/rename", methods=["GET", "POST"])
 @login_required
+@csrf_required
 @recipe_owner_required
 def rename_recipe(recipe_id):
     r = recipe.get_recipe(recipe_id)
@@ -309,6 +331,7 @@ def rename_recipe(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/edit/tags", methods=["POST"])
 @login_required
+@csrf_required
 @recipe_owner_required
 def edit_tags(recipe_id):
     r = recipe.get_recipe(recipe_id)
@@ -329,6 +352,7 @@ def edit_tags(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/edit/delete", methods=["POST"])
 @login_required
+@csrf_required
 @recipe_owner_required
 def delete_recipe(recipe_id):
     recipe.delete_recipe(recipe_id)
@@ -337,6 +361,7 @@ def delete_recipe(recipe_id):
 
 @app.route("/recipe/<int:recipe_id>/reviews/add", methods=["POST"])
 @login_required
+@csrf_required
 def review_recipe(recipe_id):
     user_id = session["user_id"]
     if request.form["rating"]:

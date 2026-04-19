@@ -11,6 +11,11 @@
     {% if recipe.is_draft %}
         <li>
             <form method="post" action="/recipe/{{ recipe.id }}/edit/publish">
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ session.csrf_token }}"
+                />
                 <button type="submit" name="action" value="publish">
                     Publish recipe
                 </button>
@@ -19,6 +24,11 @@
     {% else %}
         <li>
             <form method="post" action="/recipe/{{ recipe.id }}/edit/publish">
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ session.csrf_token }}"
+                />
                 <button type="submit" name="action" value="unpublish">
                     Unpublish recipe
                 </button>
@@ -32,6 +42,11 @@
     </li>
     <li>
         <form method="post" action="/recipe/{{ recipe.id }}/edit/delete">
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ session.csrf_token }}"
+            />
             <button type="submit">Delete recipe</button>
         </form>
     </li>
@@ -39,6 +54,11 @@
 
 {% block tags %}
     <form method="post" action="/recipe/{{ recipe.id }}/edit/tags">
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+        />
         {% if recipe.tags %}
             It has the following tags:
             {% for tag in recipe.tags %}

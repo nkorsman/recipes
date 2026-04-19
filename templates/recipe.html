@@ -29,6 +29,11 @@
                                 method="post"
                                 action="/recipe/{{ recipe.id }}/favorite"
                             >
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ session.csrf_token }}"
+                                />
                                 {% if recipe.is_favorite %}
                                     <button
                                         type="submit"
@@ -105,6 +110,11 @@
                     method="post"
                     action="/recipe/{{ recipe.id }}/reviews/add"
                 >
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{ session.csrf_token }}"
+                    />
                     <p>Rating:</p>
                     <select name="rating">
                         <option>1</option>

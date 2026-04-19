@@ -6,6 +6,11 @@
 
 {% block instructions %}
     <form method="post">
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+        />
         {% for instruction in instructions %}
             <textarea
                 name="instruction"

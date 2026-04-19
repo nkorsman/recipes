@@ -4,6 +4,11 @@
     <h2>New recipe</h2>
     <form method="post">
         <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+        />
+        <input
             type="text"
             placeholder="Recipe title"
             name="title"

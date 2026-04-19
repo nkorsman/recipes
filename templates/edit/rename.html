@@ -6,6 +6,11 @@
 
 {% block recipe_title %}
     <form method="post">
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+        />
         <input type="text" name="title" value="{{ title }}" />
         <br />
         <button type="submit" name="action" value="save">Save</button>

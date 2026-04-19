@@ -6,6 +6,11 @@
 
 {% block ingredients %}
     <form method="post">
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+        />
         <!-- We need a hidden submit button here since pressing enter submits the form using the form's first submit button.   -->
         <button type="submit" name="action" value="save" hidden>Save</button>
         {% for ingredient in ingredients %}
