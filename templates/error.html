@@ -1,5 +1,8 @@
-<h1>Error</h1>
-<h2>{{ error.code }} {{ error.name }}</h2>
-<p>{{ error.description }}</p>
-
-<p>Click <a href="/">here</a> to return to the home page.</p>
+{% extends "layout.html" %}
+{% block title %}
+    Error {{ error.code }}
+{% endblock title %}
+{% block content %}
+    <h2>Error - {{ error.code }} {{ error.name }}</h2>
+    <p>{{ error.description }}</p>
+{% endblock content %}
