@@ -1,0 +1,25 @@
+{% extends "recipe.html" %}
+
+{% block reviews %}
+    <form method="post">
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+        />
+        <p>Rating:</p>
+        <select name="rating">
+            <option></option>
+            {% for n in range(1, 6) %}
+                <option {% if review.rating == n %}selected{% endif %}>
+                    {{ n }}
+                </option>
+            {% endfor %}
+        </select>
+        <br />
+        <p>Comment:</p>
+        <textarea name="comment">{{ review.content }}</textarea>
+        <br />
+        <button type="submit">Submit</button>
+    </form>
+{% endblock reviews %}

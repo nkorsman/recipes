@@ -102,33 +102,20 @@
             {% endblock instructions %}
         </div>
     </div>
-    {% block reviews %}
+
         <div class="Reviews">
             <h3>Reviews</h3>
+            {% block reviews %}
             {% if (not recipe.is_author) and session.user_id %}
-                <form
-                    method="post"
-                    action="/recipe/{{ recipe.id }}/reviews/add"
-                >
-                    <input
-                        type="hidden"
-                        name="csrf_token"
-                        value="{{ session.csrf_token }}"
-                    />
-                    <p>Rating:</p>
-                    <select name="rating">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                    <br />
-                    <p>Comment:</p>
-                    <textarea name="comment"></textarea>
-                    <br />
-                    <button type="submit">Submit</button>
-                </form>
+            {% if recipe.has_reviewed %}
+            <a href="/recipe/{{ recipe.id }}/review"
+                ><button>Edit review</button>
+            </a>
+            {% else %}
+            <a href="/recipe/{{ recipe.id }}/review"
+                ><button>Leave a review</button>
+            </a>
+            {% endif %}
             {% endif %}
             {% for review in recipe.reviews %}
                 <div class="review">

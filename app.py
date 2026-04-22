@@ -154,6 +154,7 @@ def show_recipe(recipe_id):
 
     recipe["is_author"] = users.is_recipe_author(user_id, recipe_id)
     recipe["is_favorite"] = users.is_recipe_favorite(user_id, recipe_id)
+    recipe["has_reviewed"] = reviews.user_has_reviewed(user_id, recipe_id)
 
     if recipe["is_draft"]:
         if recipe["is_author"]:
@@ -323,20 +324,18 @@ def delete_recipe(recipe_id):
     return redirect("/")
 
 
-@app.route("/recipe/<int:recipe_id>/reviews/add", methods=["POST"])
+@app.route("/recipe/<int:recipe_id>/review", methods=["GET", "POST"])
 @login_required
 @csrf_required
 def review_recipe(recipe_id):
-    user_id = session["user_id"]
-    if request.form["rating"]:
-        rating = int(request.form["rating"])
-    else:
-        rating = None
+    recipe = get_recipe_or_404(recipe_id)
+    if request.method == "GET":
+        review = reviews.get_user_review(session["user_id"], recipe_id)
+        return render_template("review.html", recipe=recipe, review=review)
 
-    if request.form["comment"]:
-        comment = request.form["comment"]
-    else:
-        comment = None
+    user_id = session["user_id"]
+    rating = request.form["rating"]
+    comment = request.form["comment"]
 
     error = reviews.leave_review(recipe_id, user_id, rating, comment)
     if error:
