@@ -4,6 +4,9 @@
 {% block content %}
     <h2>Latest recipes</h2>
     {{ recipe_list(recipes) }}
+    <div class="more">
+        <a href="/recipes" class="more">More recipes →</a>
+    </div>
     <h2>Popular tags</h2>
     {% if tags %}
         <ul>

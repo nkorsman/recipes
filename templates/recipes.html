@@ -1,0 +1,17 @@
+{% from "macros.html" import recipe_list %}
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <h2>All recipes</h2>
+    {{ recipe_list(recipes) }}
+
+    <p class="more">
+        {% if page > 1 %}
+            <a href="/recipes?page={{ page-1 }}"><button>←</button></a>
+        {% endif %}
+        Page {{ page }} / {{ page_count }}
+        {% if page < page_count %}
+            <a href="/recipes?page={{ page+1 }}"><button>→</button></a>
+        {% endif %}
+    </p>
+{% endblock %}

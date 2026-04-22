@@ -1,3 +1,4 @@
+import math
 import secrets
 from functools import wraps
 
@@ -62,6 +63,25 @@ def index():
     recipe_list = recipes.get_recipes()
     tag_list = tags.get_tags()
     return render_template("index.html", recipes=recipe_list, tags=tag_list)
+
+
+@app.route("/recipes")
+def show_recipes():
+    page_size = 20
+    recipe_count = recipes.count_recipes()
+    page_count = math.ceil(recipe_count / page_size)
+    page_count = max(page_count, 1)
+
+    arg = request.args.get("page")
+    page = int(arg or "1")
+
+    page = max(1, page)
+    page = min(page, page_count)
+
+    recipe_list = recipes.get_recipes(page=page, page_size=page_size)
+    return render_template(
+        "recipes.html", recipes=recipe_list, page=page, page_count=page_count
+    )
 
 
 @app.route("/search")

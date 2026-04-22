@@ -1,7 +1,7 @@
 body {
     margin: auto;
     max-width: 900px;
-    font-family: Palatino, Georgia, serif;
+    font-family: Palatino, "Book Antiqua", Georgia, serif;
     line-height: 1.5;
     background-color: oldlace;
 }
@@ -51,4 +51,9 @@ nav li:not(:last-of-type) {
 
 .message.error {
     background-color: firebrick;
+}
+
+.more {
+    text-align: right;
+    font-weight: bold;
 }

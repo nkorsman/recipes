@@ -1,38 +1,50 @@
 import database
 
 
-def get_recipes(tag_id=None, user_id=None, favorited_by=None, published=True):
-    sql = """SELECT R.id, R.title, U.username
-             FROM Recipes R
-             JOIN Users U ON U.id = R.author_id"""
+def recipe_filters(tag_id=None, user_id=None, favorited_by=None, published=True):
+    joins, wheres, parameters = [], [], []
 
-    joins = []
-    conditions = []
-    parameters = []
+    wheres.append("R.is_draft = ?")
+    parameters.append(not published)
 
     if tag_id:
         joins.append("JOIN RecipeTags T ON T.recipe_id = R.id")
-        conditions.append("T.tag_id = ?")
+        wheres.append("T.tag_id = ?")
         parameters.append(tag_id)
     if user_id:
-        conditions.append("R.author_id = ?")
+        wheres.append("R.author_id = ?")
         parameters.append(user_id)
     if favorited_by:
         joins.append("JOIN UserFavorites F ON F.recipe_id = R.id")
-        conditions.append("F.user_id = ?")
+        wheres.append("F.user_id = ?")
         parameters.append(favorited_by)
 
-    conditions.append("R.is_draft = ?")
-    parameters.append(not published)
+    return joins, wheres, parameters
 
-    if joins:
-        sql += "\n" + "\n".join(joins)
-    if conditions:
-        sql += "\nWHERE " + " AND ".join(conditions)
 
-    sql += "\nORDER BY R.updated_at DESC"
+def get_recipes(page=1, page_size=8, **filters):
+    joins, wheres, parameters = recipe_filters(**filters)
+    parameters.append(page_size)
+    parameters.append(page_size * (page - 1))
+
+    sql = f"""SELECT R.id, R.title, U.username
+             FROM Recipes R
+             JOIN Users U ON U.id = R.author_id
+             {"\n".join(joins)}
+             WHERE {" AND ".join(wheres)}
+             ORDER BY R.updated_at DESC
+             LIMIT ? OFFSET ?"""
 
     return database.query_db(sql, parameters)
+
+
+def count_recipes():
+    sql = """SELECT COUNT(*)
+             FROM Recipes R
+             WHERE is_draft = 0
+             """
+    result = database.query_db(sql, one=True)
+    return result[0] if result else 0
 
 
 def get_recipe(recipe_id):
