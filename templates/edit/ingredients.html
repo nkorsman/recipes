@@ -13,11 +13,11 @@
         />
         <!-- We need a hidden submit button here since pressing enter submits the form using the form's first submit button.   -->
         <button type="submit" name="action" value="save" hidden>Save</button>
-        {% for ingredient in items %}
+        {% for item in items %}
             <input
                 type="text"
                 name="item"
-                value="{{ ingredient }}"
+                value="{{ items }}"
                 maxlength="100"
             />
             <button

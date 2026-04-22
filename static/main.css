@@ -53,7 +53,7 @@ nav li:not(:last-of-type) {
     background-color: firebrick;
 }
 
-.more {
+.pagination {
     text-align: right;
     font-weight: bold;
 }

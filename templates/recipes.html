@@ -5,7 +5,7 @@
     <h2>All recipes</h2>
     {{ recipe_list(recipes) }}
 
-    <p class="more">
+    <p class="pagination">
         {% if page > 1 %}
             <a href="/recipes?page={{ page-1 }}"><button>←</button></a>
         {% endif %}
