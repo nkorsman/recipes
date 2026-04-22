@@ -22,7 +22,7 @@ def recipe_filters(tag_id=None, user_id=None, favorited_by=None, published=True)
     return joins, wheres, parameters
 
 
-def get_recipes(page=1, page_size=8, **filters):
+def get_recipes(page=1, page_size=9, **filters):
     joins, wheres, parameters = recipe_filters(**filters)
     parameters.append(page_size)
     parameters.append(page_size * (page - 1))

@@ -1,10 +1,13 @@
 {% macro recipe_list(recipes) %}
     {% if recipes %}
-        <ul>
+        <ul class="recipe-grid">
             {% for recipe in recipes %}
                 <li>
-                    <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a> by
-                    {{ recipe.username }}
+                    <a href="/recipe/{{ recipe.id }}" class="title"
+                        >{{ recipe.title }}</a
+                    >
+                    <br />
+                    by {{ recipe.username }}
                 </li>
             {% endfor %}
         </ul>

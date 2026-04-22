@@ -53,6 +53,23 @@ nav li:not(:last-of-type) {
     background-color: firebrick;
 }
 
+.recipe-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    list-style: none;
+    padding: 0;
+    gap: 1em;
+}
+
+.recipe-grid li {
+    background-color: #efe1c5;
+    padding: 1em;
+}
+
+.recipe-grid .title {
+    font-size: 20px;
+}
+
 .pagination {
     text-align: right;
     font-weight: bold;
