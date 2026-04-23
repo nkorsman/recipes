@@ -14,12 +14,7 @@
         <!-- We need a hidden submit button here since pressing enter submits the form using the form's first submit button.   -->
         <button type="submit" name="action" value="save" hidden>Save</button>
         {% for item in items %}
-            <input
-                type="text"
-                name="item"
-                value="{{ items }}"
-                maxlength="100"
-            />
+            <input type="text" name="item" value="{{ item }}" maxlength="100" />
             <button
                 type="submit"
                 name="action"
