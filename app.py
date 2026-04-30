@@ -184,7 +184,8 @@ def show_recipe(recipe_id):
 
     recipe["is_author"] = users.is_recipe_author(user_id, recipe_id)
     recipe["is_favorite"] = users.is_recipe_favorite(user_id, recipe_id)
-    recipe["has_reviewed"] = reviews.user_has_reviewed(user_id, recipe_id)
+    recipe["user_review"] = reviews.get_user_review(user_id, recipe_id)
+    recipe["reviews"] = reviews.get_reviews(recipe_id, user_id)
 
     if recipe["is_draft"]:
         if recipe["is_author"]:

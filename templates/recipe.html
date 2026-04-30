@@ -107,10 +107,15 @@
             <h3>Reviews</h3>
             {% block reviews %}
             {% if (not recipe.is_author) and session.user_id %}
-            {% if recipe.has_reviewed %}
-            <a href="/recipe/{{ recipe.id }}/review"
-                ><button>Edit review</button>
-            </a>
+            {% if recipe.user_review %}
+            <div class="review">
+                <h4>Your review</h4>
+                <i>{{ recipe.user_review.created_at }}</i> <br />
+                Rating: {{ recipe.user_review.rating }} <br />
+                Comment: {{ recipe.user_review.content }}
+                <br />
+                <a href="/recipe/{{ recipe.id }}/review"><button>Edit</button></a>
+            </div>
             {% else %}
             <a href="/recipe/{{ recipe.id }}/review"
                 ><button>Leave a review</button>

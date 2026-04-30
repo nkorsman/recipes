@@ -2,6 +2,22 @@ import database
 import users
 
 
+def get_reviews(recipe_id, excluded_user=None):
+    parameters = [recipe_id]
+    condition = ""
+    if excluded_user:
+        condition = "AND U.id != ?"
+        parameters.append(excluded_user)
+
+    sql = f"""SELECT U.username, R.rating, R.content, R.updated_at
+             FROM Reviews R
+             JOIN Users U on U.id = R.user_id
+             WHERE R.recipe_id = ?
+             {condition}
+             ORDER BY R.updated_at"""
+    return database.query_db(sql, parameters)
+
+
 def user_has_reviewed(user_id, recipe_id):
     sql = "SELECT id FROM Reviews WHERE user_id = ? AND recipe_id = ?"
     exists = database.query_db(sql, [user_id, recipe_id], one=True)
@@ -9,7 +25,7 @@ def user_has_reviewed(user_id, recipe_id):
 
 
 def get_user_review(user_id, recipe_id):
-    sql = """SELECT R.rating, R.content
+    sql = """SELECT R.rating, R.content, R.created_at
              FROM Reviews R
              WHERE R.recipe_id = ?
              AND R.user_id = ?"""
