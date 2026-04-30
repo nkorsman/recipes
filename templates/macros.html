@@ -15,3 +15,14 @@
         <p>No recipes found.</p>
     {% endif %}
 {% endmacro %}
+
+{% macro review_list(reviews) %}
+    {% for review in reviews %}
+        <div class="review">
+            <b>Review from {{ review.username }}</b> <br />
+            <i>{{ review.created_at }}</i> <br />
+            Rating: {{ review.rating }} <br />
+            Comment: {{ review.content }}
+        </div>
+    {% endfor %}
+{% endmacro %}

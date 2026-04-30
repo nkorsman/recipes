@@ -1,0 +1,7 @@
+{% from "macros.html" import review_list %}
+{% extends "layout.html" %}
+{% block title %}{{ recipe.title }} Reviews{% endblock %}
+{% block content %}
+    <h2>All reviews of {{ recipe.title }}</h2>
+    {{ review_list(reviews) }}
+{% endblock %}

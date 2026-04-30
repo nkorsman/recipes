@@ -429,3 +429,11 @@ def review_recipe(recipe_id):
         reviews.remove_review(recipe_id, user_id)
 
     return redirect(f"/recipe/{recipe_id}")
+
+
+@app.route("/recipe/<int:recipe_id>/reviews")
+def show_reviews(recipe_id):
+    recipe = get_recipe_or_404(recipe_id)
+    review_list = reviews.get_reviews(recipe_id)
+
+    return render_template("reviews.html", recipe=recipe, reviews=review_list)
