@@ -45,6 +45,30 @@ li {
 }
 
 .review {
+    padding-top: 0;
     padding: 0.5em;
     margin: 1em;
+    background-color: #efe1c5;
+}
+
+.review-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    margin: 0.5em;
+}
+
+.review-content {
+    margin: 0.5em;
+}
+
+.review-header .reviewer {
+    grid-column: 1;
+    font-weight: bold;
+    margin: 0;
+}
+
+.review-header .date {
+    grid-column: 2;
+    font-style: italic;
+    margin: 0;
 }

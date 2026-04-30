@@ -25,8 +25,9 @@ def user_has_reviewed(user_id, recipe_id):
 
 
 def get_user_review(user_id, recipe_id):
-    sql = """SELECT R.rating, R.content, R.created_at
+    sql = """SELECT U.username, R.rating, R.content, R.created_at, R.recipe_id
              FROM Reviews R
+             JOIN Users U on U.id = R.user_id
              WHERE R.recipe_id = ?
              AND R.user_id = ?"""
     return database.query_db(sql, [recipe_id, user_id], one=True)

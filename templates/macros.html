@@ -16,13 +16,28 @@
     {% endif %}
 {% endmacro %}
 
+{% macro show_review(review, edit) %}
+    <div class="review">
+        <div class="review-header">
+            <p class="reviewer">{{ review.username }}</p>
+            <p class="date">{{ review.updated_at }}</p>
+            {% if review.rating %}
+                <div class="rating">
+                    {{ "★" * review.rating }}{{ "☆" * (5 - review.rating) }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="review-content">{{ review.content }}</div>
+        {% if edit %}
+            <a href="/recipe/{{ review.recipe_id }}/review"
+                ><button>Edit</button>
+            </a>
+        {% endif %}
+    </div>
+{% endmacro %}
+
 {% macro review_list(reviews) %}
     {% for review in reviews %}
-        <div class="review">
-            <b>Review from {{ review.username }}</b> <br />
-            <i>{{ review.created_at }}</i> <br />
-            Rating: {{ review.rating }} <br />
-            Comment: {{ review.content }}
-        </div>
+        {{ show_review(review, False) }}
     {% endfor %}
 {% endmacro %}

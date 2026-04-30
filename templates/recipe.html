@@ -1,4 +1,4 @@
-{% from "macros.html" import review_list %}
+{% from "macros.html" import review_list, show_review %}
 {% extends "layout.html" %}
 
 {% block title %}{{ recipe.title }}{% endblock %}
@@ -104,29 +104,22 @@
         </div>
     </div>
 
-        <div class="Reviews">
-            <h3>Reviews</h3>
-            {% block reviews %}
-            {% if (not recipe.is_author) and session.user_id %}
-                {% if recipe.user_review %}
-                    <div class="review">
-                        <h4>Your review</h4>
-                        <i>{{ recipe.user_review.created_at }}</i> <br />
-                        Rating: {{ recipe.user_review.rating }} <br />
-                        Comment: {{ recipe.user_review.content }}
-                        <br />
-                        <a href="/recipe/{{ recipe.id }}/review"><button>Edit</button></a>
-                    </div>
-                {% else %}
-                    <a href="/recipe/{{ recipe.id }}/review"
-                        ><button>Leave a review</button>
-                    </a>
-                {% endif %}
+    <h3>Reviews</h3>
+    {% block reviews %}
+        {% if (not recipe.is_author) and session.user_id %}
+            {% if recipe.user_review %}
+                {{ show_review(recipe.user_review, True) }}
+            {% else %}
+                <a href="/recipe/{{ recipe.id }}/review"
+                    ><button>Leave a review</button>
+                </a>
             {% endif %}
-            {{ review_list(reviews) }}
-            <div class="pagination">
-                <a href="/recipe/{{ recipe.id }}/reviews" class="more">More reviews →</a>
-            </div>
+        {% endif %}
+        {{ review_list(recipe.reviews) }}
+        <div class="pagination">
+            <a href="/recipe/{{ recipe.id }}/reviews" class="more"
+                >More reviews →</a
+            >
         </div>
     {% endblock reviews %}
 {% endblock content %}
