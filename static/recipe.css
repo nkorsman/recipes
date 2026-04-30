@@ -36,10 +36,12 @@ li {
 
 .ingredients {
     grid-column: 1;
+    overflow-wrap: anywhere;
 }
 
 .instructions {
     grid-column: 2;
+    overflow-wrap: anywhere;
 }
 
 .review {
