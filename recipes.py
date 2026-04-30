@@ -38,12 +38,15 @@ def get_recipes(page=1, page_size=9, **filters):
     return database.query_db(sql, parameters)
 
 
-def count_recipes():
-    sql = """SELECT COUNT(*)
+def count_recipes(**filters):
+    joins, wheres, parameters = recipe_filters(**filters)
+    sql = f"""SELECT COUNT(*)
              FROM Recipes R
-             WHERE is_draft = 0
+             JOIN Users U ON U.id = R.author_id
+             {"\n".join(joins)}
+             WHERE {" AND ".join(wheres)}
              """
-    result = database.query_db(sql, one=True)
+    result = database.query_db(sql, parameters, one=True)
     return result[0] if result else 0
 
 

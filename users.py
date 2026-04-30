@@ -13,9 +13,13 @@ def get_user(id):
         return None
 
     user = dict(result)
-    user["authored_recipes"] = recipes.get_recipes(user_id=id)
-    user["favorite_recipes"] = recipes.get_recipes(favorited_by=id)
-    user["draft_recipes"] = recipes.get_recipes(user_id=id, published=False)
+    user["authored"] = recipes.get_recipes(page_size=6, user_id=id)
+    user["favorites"] = recipes.get_recipes(page_size=6, favorited_by=id)
+    user["drafts"] = recipes.get_recipes(page_size=6, user_id=id, published=False)
+
+    user["more_authored"] = recipes.count_recipes(user_id=id) > 6
+    user["more_favorites"] = recipes.count_recipes(favorited_by=id) > 6
+    user["more_drafts"] = recipes.count_recipes(user_id=id, published=False) > 6
 
     return user
 

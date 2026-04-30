@@ -51,6 +51,23 @@ def require_recipe_author(recipe_id):
         abort(403, "You do not have permission to edit this recipe.")
 
 
+def paginate_recipes(**filters):
+    page_size = 21
+    recipe_count = recipes.count_recipes(**filters)
+    page_count = math.ceil(recipe_count / page_size)
+    page_count = max(page_count, 1)
+
+    try:
+        page = int(request.args.get("page", 1))
+    except ValueError:
+        page = 1
+    page = min(max(page, 1), page_count)
+
+    recipe_list = recipes.get_recipes(page=page, page_size=page_size, **filters)
+
+    return recipe_list, page, page_count
+
+
 @app.errorhandler(404)
 @app.errorhandler(403)
 @app.errorhandler(401)
@@ -67,20 +84,13 @@ def index():
 
 @app.route("/recipes")
 def show_recipes():
-    page_size = 20
-    recipe_count = recipes.count_recipes()
-    page_count = math.ceil(recipe_count / page_size)
-    page_count = max(page_count, 1)
-
-    arg = request.args.get("page")
-    page = int(arg or "1")
-
-    page = max(1, page)
-    page = min(page, page_count)
-
-    recipe_list = recipes.get_recipes(page=page, page_size=page_size)
+    recipe_list, page, page_count = paginate_recipes()
     return render_template(
-        "recipes.html", recipes=recipe_list, page=page, page_count=page_count
+        "recipes.html",
+        title="All recipes",
+        recipes=recipe_list,
+        page=page,
+        page_count=page_count,
     )
 
 
@@ -206,6 +216,58 @@ def show_user(username):
     user["is_owner"] = user_id == viewer_id
 
     return render_template("user.html", user=user)
+
+
+@app.route("/user/<username>/recipes")
+def show_user_recipes(username):
+    user_id = users.get_id(username)
+    if not user_id:
+        abort(404, "This user could not be found.")
+
+    title = f"All recipes by {username}"
+    recipe_list, page, page_count = paginate_recipes(user_id=user_id)
+    return render_template(
+        "recipes.html",
+        title=title,
+        recipes=recipe_list,
+        page=page,
+        page_count=page_count,
+    )
+
+
+@app.route("/user/<username>/favorites")
+def show_user_favorites(username):
+    user_id = users.get_id(username)
+    if not user_id:
+        abort(404, "This user could not be found.")
+
+    title = f"Favorite recipes of user {username}"
+    recipe_list, page, page_count = paginate_recipes(favorited_by=user_id)
+    return render_template(
+        "recipes.html",
+        title=title,
+        recipes=recipe_list,
+        page=page,
+        page_count=page_count,
+    )
+
+
+@app.route("/user/<username>/drafts")
+@login_required
+def show_user_drafts(username):
+    user_id = users.get_id(username)
+    if session["user_id"] != user_id:
+        abort(403, "You are not authorized to view this page.")
+
+    title = "Your draft recipes"
+    recipe_list, page, page_count = paginate_recipes(user_id=user_id, published=False)
+    return render_template(
+        "recipes.html",
+        title=title,
+        recipes=recipe_list,
+        page=page,
+        page_count=page_count,
+    )
 
 
 @app.route("/recipe/<int:recipe_id>/favorite", methods=["POST"])

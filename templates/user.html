@@ -5,10 +5,33 @@
     <h2>User {{ user.username }}</h2>
     {% if user.is_owner %}
         <h3>Your draft recipes</h3>
-        {{ recipe_list(user.draft_recipes ) }}
+        {{ recipe_list(user.drafts ) }}
+        {% if user.more_drafts %}
+            <div class="pagination">
+                <a href="/user/{{ user.username }}/drafts" class="more"
+                    >All draft recipes →</a
+                >
+            </div>
+        {% endif %}
     {% endif %}
     <h3>Authored recipes</h3>
-    {{ recipe_list(user.authored_recipes) }}
+    {{ recipe_list(user.authored) }}
+
+    {% if user.more_authored %}
+        <div class="pagination">
+            <a href="/user/{{ user.username }}/recipes" class="more"
+                >All authored recipes →</a
+            >
+        </div>
+    {% endif %}
     <h3>Favorite recipes</h3>
-    {{ recipe_list(user.favorite_recipes) }}
+    {{ recipe_list(user.favorites) }}
+
+    {% if user.more_favorites %}
+        <div class="pagination">
+            <a href="/user/{{ user.username }}/favorites" class="more"
+                >All favorite recipes →</a
+            >
+        </div>
+    {% endif %}
 {% endblock %}
