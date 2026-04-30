@@ -37,3 +37,10 @@ def leave_review(recipe_id, user_id, rating, comment):
 
     db.commit()
     return None
+
+
+def remove_review(recipe_id, user_id):
+    db = database.get_db()
+    sql = "DELETE FROM Reviews WHERE recipe_id = ? AND user_id = ?"
+    db.execute(sql, [recipe_id, user_id])
+    db.commit()

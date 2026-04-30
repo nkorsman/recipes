@@ -418,8 +418,13 @@ def review_recipe(recipe_id):
     user_id = session["user_id"]
     rating = request.form["rating"]
     comment = request.form["comment"]
+    action = request.form["action"]
 
-    error = reviews.leave_review(recipe_id, user_id, rating, comment)
-    if error:
-        flash(error, "error")
+    if action == "submit":
+        error = reviews.leave_review(recipe_id, user_id, rating, comment)
+        if error:
+            flash(error, "error")
+    elif action == "remove":
+        reviews.remove_review(recipe_id, user_id)
+
     return redirect(f"/recipe/{recipe_id}")

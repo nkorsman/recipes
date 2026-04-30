@@ -20,6 +20,11 @@
         <p>Comment:</p>
         <textarea name="comment">{{ review.content }}</textarea>
         <br />
-        <button type="submit">Submit</button>
+        <button type="submit" name="action" value="submit">Submit</button>
+        {% if review %}
+            <button type="submit" name="action" value="remove">Delete</button>
+        {% else %}
+            <button type="submit" name="action" value="cancel">Cancel</button>
+        {% endif %}
     </form>
 {% endblock reviews %}
