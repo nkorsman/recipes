@@ -2,20 +2,41 @@ import database
 import users
 
 
-def get_reviews(recipe_id, excluded_user=None):
+def get_reviews(recipe_id, page=1, page_size=4, excluded_user=None):
     parameters = [recipe_id]
     condition = ""
     if excluded_user:
         condition = "AND U.id != ?"
         parameters.append(excluded_user)
 
+    parameters.append(page_size)
+    parameters.append(page_size * (page - 1))
+
     sql = f"""SELECT U.username, R.rating, R.content, R.updated_at
              FROM Reviews R
              JOIN Users U on U.id = R.user_id
              WHERE R.recipe_id = ?
              {condition}
-             ORDER BY R.updated_at"""
+             ORDER BY R.updated_at
+             LIMIT ? OFFSET ?"""
     return database.query_db(sql, parameters)
+
+
+def count_reviews(recipe_id, excluded_user=None):
+    parameters = [recipe_id]
+    condition = ""
+    if excluded_user:
+        condition = "AND U.id != ?"
+        parameters.append(excluded_user)
+
+    sql = f"""SELECT COUNT(*)
+             FROM Reviews R
+             JOIN Users U ON U.id = R.user_id
+             WHERE R.recipe_id = ?
+             {condition}
+             """
+    result = database.query_db(sql, parameters, one=True)
+    return result[0] if result else 0
 
 
 def user_has_reviewed(user_id, recipe_id):
@@ -25,7 +46,7 @@ def user_has_reviewed(user_id, recipe_id):
 
 
 def get_user_review(user_id, recipe_id):
-    sql = """SELECT U.username, R.rating, R.content, R.created_at, R.recipe_id
+    sql = """SELECT U.username, R.rating, R.content, R.updated_at, R.recipe_id
              FROM Reviews R
              JOIN Users U on U.id = R.user_id
              WHERE R.recipe_id = ?

@@ -59,6 +59,7 @@ li {
 
 .review-content {
     margin: 0.5em;
+    overflow-wrap: anywhere;
 }
 
 .review-header .reviewer {

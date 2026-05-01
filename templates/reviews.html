@@ -9,4 +9,13 @@
 {% block content %}
     <h2>All reviews of {{ recipe.title }}</h2>
     {{ review_list(reviews) }}
+    <p class="pagination">
+        {% if page > 1 %}
+            <a href="?page={{ page-1 }}"><button>←</button></a>
+        {% endif %}
+        Page {{ page }} / {{ page_count }}
+        {% if page < page_count %}
+            <a href="?page={{ page+1 }}"><button>→</button></a>
+        {% endif %}
+    </p>
 {% endblock %}

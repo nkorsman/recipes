@@ -51,10 +51,9 @@ def require_recipe_author(recipe_id):
         abort(403, "You do not have permission to edit this recipe.")
 
 
-def paginate_recipes(**filters):
-    page_size = 21
-    recipe_count = recipes.count_recipes(**filters)
-    page_count = math.ceil(recipe_count / page_size)
+def paginate(count_items, get_items, page_size, **kwargs):
+    count = count_items(**kwargs)
+    page_count = math.ceil(count / page_size)
     page_count = max(page_count, 1)
 
     try:
@@ -63,9 +62,9 @@ def paginate_recipes(**filters):
         page = 1
     page = min(max(page, 1), page_count)
 
-    recipe_list = recipes.get_recipes(page=page, page_size=page_size, **filters)
+    items = get_items(page=page, page_size=page_size, **kwargs)
 
-    return recipe_list, page, page_count
+    return items, page, page_count
 
 
 @app.errorhandler(404)
@@ -84,7 +83,9 @@ def index():
 
 @app.route("/recipes")
 def show_recipes():
-    recipe_list, page, page_count = paginate_recipes()
+    recipe_list, page, page_count = paginate(
+        count_items=recipes.count_recipes, get_items=recipes.get_recipes, page_size=21
+    )
     return render_template(
         "recipes.html",
         title="All recipes",
@@ -226,7 +227,12 @@ def show_user_recipes(username):
         abort(404, "This user could not be found.")
 
     title = f"All recipes by {username}"
-    recipe_list, page, page_count = paginate_recipes(user_id=user_id)
+    recipe_list, page, page_count = paginate(
+        count_items=recipes.count_recipes,
+        get_items=recipes.get_recipes,
+        page_size=21,
+        user_id=user_id,
+    )
     return render_template(
         "recipes.html",
         title=title,
@@ -243,7 +249,12 @@ def show_user_favorites(username):
         abort(404, "This user could not be found.")
 
     title = f"Favorite recipes of user {username}"
-    recipe_list, page, page_count = paginate_recipes(favorited_by=user_id)
+    recipe_list, page, page_count = paginate(
+        count_items=recipes.count_recipes,
+        get_items=recipes.get_recipes,
+        page_size=21,
+        favorited_by=user_id,
+    )
     return render_template(
         "recipes.html",
         title=title,
@@ -261,7 +272,13 @@ def show_user_drafts(username):
         abort(403, "You are not authorized to view this page.")
 
     title = "Your draft recipes"
-    recipe_list, page, page_count = paginate_recipes(user_id=user_id, published=False)
+    recipe_list, page, page_count = paginate(
+        count_items=recipes.count_recipes,
+        get_items=recipes.get_recipes,
+        page_size=21,
+        user_id=user_id,
+        published=False,
+    )
     return render_template(
         "recipes.html",
         title=title,
@@ -434,6 +451,17 @@ def review_recipe(recipe_id):
 @app.route("/recipe/<int:recipe_id>/reviews")
 def show_reviews(recipe_id):
     recipe = get_recipe_or_404(recipe_id)
-    review_list = reviews.get_reviews(recipe_id)
+    review_list, page, page_count = paginate(
+        count_items=reviews.count_reviews,
+        get_items=reviews.get_reviews,
+        page_size=5,
+        recipe_id=recipe_id,
+    )
 
-    return render_template("reviews.html", recipe=recipe, reviews=review_list)
+    return render_template(
+        "reviews.html",
+        recipe=recipe,
+        reviews=review_list,
+        page=page,
+        page_count=page_count,
+    )
