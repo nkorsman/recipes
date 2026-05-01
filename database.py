@@ -14,8 +14,10 @@ def get_db():
 
 def query_db(query, args=(), one=False):
     result = get_db().execute(query, args)
-    rows = result.fetchall()
-    return (rows[0] if rows else None) if one else rows
+    if one:
+        return result.fetchone()
+
+    return result.fetchall()
 
 
 def close_db(exception):
