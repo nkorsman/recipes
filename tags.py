@@ -6,7 +6,7 @@ def get_tags(page=1, page_size=30):
     offset = page_size * (page - 1)
     sql = """SELECT T.name, T.recipe_count
              FROM Tags T
-             ORDER BY recipe_count desc
+             ORDER BY recipe_count DESC
              LIMIT ? OFFSET ?"""
     return database.query_db(sql, [limit, offset])
 

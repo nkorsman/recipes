@@ -69,7 +69,10 @@ CREATE INDEX idx_recipes_updated_at ON Recipes(updated_at DESC);
 
 CREATE INDEX idx_reviews_user_id ON Reviews(user_id);
 CREATE INDEX idx_reviews_recipe_id ON Reviews(recipe_id);
+CREATE INDEX idx_reviews_updated_at ON Reviews(updated_at DESC);
 
 CREATE INDEX idx_recipetags_tag_id ON RecipeTags(tag_id);
+
+CREATE INDEX idx_recipes_recipe_count ON Tags(recipe_count DESC);
 
 CREATE INDEX idx_userfavorites_recipe_id ON UserFavorites(recipe_id);
