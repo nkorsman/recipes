@@ -7,29 +7,23 @@ import recipes
 import reviews
 
 
-def get_user(id):
+def get_user(user_id):
     sql = "SELECT id, username FROM Users WHERE id = ?"
-    result = database.query_db(sql, [id], one=True)
+    result = database.query_db(sql, [user_id], one=True)
     if result is None:
         return None
 
     user = dict(result)
-    user["authored"] = recipes.get_recipes(page_size=6, user_id=id)
-    user["favorites"] = recipes.get_recipes(page_size=6, favorited_by=id)
-    user["drafts"] = recipes.get_recipes(page_size=6, user_id=id, published=False)
-    user["reviews"] = reviews.get_user_reviews(id)
+    user["authored"] = recipes.get_recipes(page_size=6, user_id=user_id)
+    user["favorites"] = recipes.get_recipes(page_size=6, favorited_by=user_id)
+    user["drafts"] = recipes.get_recipes(page_size=6, user_id=user_id, published=False)
+    user["reviews"] = reviews.get_user_reviews(user_id)
 
     return user
 
 
 def is_recipe_favorite(user_id, recipe_id):
     sql = "SELECT id FROM UserFavorites WHERE recipe_id = ? AND user_id = ?"
-    result = database.query_db(sql, [recipe_id, user_id], one=True)
-    return result is not None
-
-
-def is_recipe_author(user_id, recipe_id):
-    sql = "SELECT id FROM Recipes WHERE id = ? AND author_id = ?"
     result = database.query_db(sql, [recipe_id, user_id], one=True)
     return result is not None
 
@@ -63,8 +57,8 @@ def validate_password(password1, password2):
     return errors
 
 
-def parse_username(input):
-    username = input.strip()
+def parse_username(user_input):
+    username = user_input.strip()
     errors = []
     if not username.isalnum():
         errors.append("Username must consist of only letters and numbers.")

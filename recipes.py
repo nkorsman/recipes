@@ -98,8 +98,8 @@ def search_recipes(query):
     return database.query_db(sql, [query, query, query])
 
 
-def parse_title(input):
-    title = input.strip()
+def parse_title(user_input):
+    title = user_input.strip()
     errors = []
 
     if not title:
@@ -132,17 +132,18 @@ def rename_recipe(recipe_id, title):
     sql = "UPDATE Recipes SET title = ?, updated_at = DATETIME('now') WHERE id = ?"
     db.execute(sql, [title, recipe_id])
     db.commit()
+    return errors
 
 
-def delete_recipe(id):
+def delete_recipe(recipe_id):
     db = database.get_db()
     sql = "DELETE FROM Recipes WHERE id = ?"
-    db.execute(sql, [id])
+    db.execute(sql, [recipe_id])
     db.commit()
 
 
-def parse_ingredient(input):
-    ingredient = input.strip()
+def parse_ingredient(user_input):
+    ingredient = user_input.strip()
     errors = []
 
     if not ingredient:
@@ -153,8 +154,8 @@ def parse_ingredient(input):
     return ingredient, errors
 
 
-def parse_instruction(input):
-    instruction = input.strip()
+def parse_instruction(user_input):
+    instruction = user_input.strip()
     errors = []
 
     if not instruction:

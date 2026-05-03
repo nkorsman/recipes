@@ -1,5 +1,5 @@
 import database
-import users
+import recipes
 
 
 def get_reviews(recipe_id, page=1, page_size=4, excluded_user=None):
@@ -80,17 +80,18 @@ def leave_review(recipe_id, user_id, rating, comment):
         return "Review cannot be longer than 500 characters."
 
     db = database.get_db()
-    if users.is_recipe_author(user_id, recipe_id):
+    if user_id == recipes.get_author(recipe_id):
         return "You may not review your own recipe."
 
     sql = "SELECT id FROM Reviews WHERE user_id = ? AND recipe_id = ?"
-    id = database.query_db(sql, [user_id, recipe_id], one=True)
-    if id:
-        sql = "UPDATE Reviews SET rating = ?, content = ?, updated_at = DATETIME('now') WHERE id = ?"
-        db.execute(sql, [rating, comment, id[0]])
+    result = database.query_db(sql, [user_id, recipe_id], one=True)
+    if result:
+        sql = """UPDATE Reviews SET rating = ?, content = ?, updated_at = DATETIME('now')
+                 WHERE id = ?"""
+        db.execute(sql, [rating, comment, result[0]])
     else:
         sql = """INSERT INTO Reviews (recipe_id, user_id, rating, content, created_at, updated_at)
-                VALUES (?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"""
+                 VALUES (?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"""
         db.execute(sql, [recipe_id, user_id, rating, comment])
 
     db.commit()

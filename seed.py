@@ -52,7 +52,7 @@ def generate_tags():
 
 
 def generate_recipes():
-    for i in range(recipe_count):
+    for _ in range(recipe_count):
         title = "".join(choices(ascii_letters, k=randint(1, 50)))
         author_id = randint(1, user_count)
 
@@ -96,7 +96,7 @@ def generate_reviews():
             content = "".join(choices(ascii_letters, k=randint(1, 500)))
             rating = randint(1, 5)
             sql = """INSERT INTO Reviews (recipe_id, user_id, rating, content, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"""
+                     VALUES (?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"""
             db.execute(sql, [i, j, rating, content])
     db.commit()
 

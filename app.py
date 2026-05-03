@@ -60,7 +60,7 @@ def get_recipe_or_404(recipe_id):
 
 
 def require_recipe_author(recipe_id):
-    if not users.is_recipe_author(session["user_id"], recipe_id):
+    if recipes.get_author(recipe_id) != session["user_id"]:
         abort(403, "You do not have permission to edit this recipe.")
 
 
@@ -83,12 +83,12 @@ def paginate(count_items, get_items, page_size, **kwargs):
 @app.errorhandler(404)
 @app.errorhandler(403)
 @app.errorhandler(401)
-def error(e):
+def show_error(e):
     return render_template("error.html", error=e)
 
 
 @app.route("/")
-def index():
+def show_index():
     recipe_list = recipes.get_recipes()
     tag_list = tags.get_tags()
     return render_template("index.html", recipes=recipe_list, tags=tag_list)
@@ -215,7 +215,7 @@ def show_recipe(recipe_id):
     user_id = session.get("user_id")
     recipe = get_recipe_or_404(recipe_id)
 
-    recipe["is_author"] = users.is_recipe_author(user_id, recipe_id)
+    recipe["is_author"] = recipes.get_author(recipe_id) == user_id
     recipe["is_favorite"] = users.is_recipe_favorite(user_id, recipe_id)
     recipe["user_review"] = reviews.get_review(user_id, recipe_id)
     recipe["reviews"] = reviews.get_reviews(recipe_id, excluded_user=user_id)
@@ -388,7 +388,7 @@ def edit_content(recipe_id, content_type):
     elif content_type == "instructions":
         save_items = recipes.save_instructions
     else:
-        abort(404)
+        return abort(404)
 
     if request.method == "GET":
         items = [i["content"] for i in recipe[content_type]]
@@ -402,7 +402,7 @@ def edit_content(recipe_id, content_type):
 
     if action == "cancel":
         return redirect(f"/recipe/{recipe_id}/edit")
-    elif action == "new":
+    if action == "new":
         items.append("")
     elif action == "remove":
         index = int(parts[1])

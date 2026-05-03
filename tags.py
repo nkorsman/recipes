@@ -23,8 +23,8 @@ def get_id(name):
     return result[0] if result else None
 
 
-def parse_tag(input):
-    name = input.strip().lower()
+def parse_tag(user_input):
+    name = user_input.strip().lower()
     errors = []
     if not name:
         errors.append("Tag must not be blank.")
