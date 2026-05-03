@@ -173,6 +173,9 @@ def save_ingredients(recipe_id, ingredients):
     db.execute(sql, [recipe_id])
 
     for i, ingredient in enumerate(ingredients):
+        if i > 99:
+            errors.append("Recipe must not have more than 20 ingredients.")
+            return errors
         ingredient, e = parse_ingredient(ingredient)
         for msg in e:
             errors.append(f"Ingredient {i + 1}: {msg}")
@@ -197,6 +200,9 @@ def save_instructions(recipe_id, instructions):
     db.execute(sql, [recipe_id])
 
     for i, instruction in enumerate(instructions):
+        if i > 99:
+            errors.append("Recipe must not have more than 20 instructions..")
+            return errors
         instruction, e = parse_instruction(instruction)
         for msg in e:
             errors.append(f"Step {i + 1}: {msg}")

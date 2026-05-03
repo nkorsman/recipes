@@ -63,6 +63,12 @@ def tag_recipe(recipe_id, tag_name):
         if exists:
             errors.append("Recipe already has this tag.")
 
+    sql = "SELECT COUNT(*) FROM RecipeTags WHERE recipe_id = ?"
+    result = database.query_db(sql, [recipe_id], one=True)
+    if result:
+        if result[0] >= 9:
+            return "Recipe cannot have more than 10 tags."
+
     if errors:
         return errors
 

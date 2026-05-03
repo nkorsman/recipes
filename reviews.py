@@ -76,6 +76,8 @@ def leave_review(recipe_id, user_id, rating, comment):
     rating = int(rating) if rating else None
     if not comment:
         comment = None
+    if len(comment) > 500:
+        return "Review cannot be longer than 500 characters."
 
     db = database.get_db()
     if users.is_recipe_author(user_id, recipe_id):
