@@ -92,9 +92,9 @@ def search_recipes(query):
              LEFT JOIN RecipeIngredients G ON G.recipe_id = R.id
              LEFT JOIN RecipeInstructions S ON S.recipe_id = R.id
              WHERE R.is_draft = 0
-             AND R.title LIKE ?
+             AND (R.title LIKE ?
              OR G.content LIKE ?
-             OR S.content LIKE ?"""
+             OR S.content LIKE ?)"""
     return database.query_db(sql, [query, query, query])
 
 
@@ -173,7 +173,7 @@ def save_ingredients(recipe_id, ingredients):
     db.execute(sql, [recipe_id])
 
     for i, ingredient in enumerate(ingredients):
-        if i > 99:
+        if i > 20:
             errors.append("Recipe must not have more than 20 ingredients.")
             return errors
         ingredient, e = parse_ingredient(ingredient)
@@ -200,7 +200,7 @@ def save_instructions(recipe_id, instructions):
     db.execute(sql, [recipe_id])
 
     for i, instruction in enumerate(instructions):
-        if i > 99:
+        if i > 20:
             errors.append("Recipe must not have more than 20 instructions..")
             return errors
         instruction, e = parse_instruction(instruction)

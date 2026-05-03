@@ -373,9 +373,9 @@ def publish_recipe(recipe_id):
     return redirect(f"/recipe/{recipe_id}/edit")
 
 
+@app.route("/recipe/<int:recipe_id>/edit/<content_type>", methods=["GET", "POST"])
 @login_required
 @csrf_required
-@app.route("/recipe/<int:recipe_id>/edit/<content_type>", methods=["GET", "POST"])
 def edit_content(recipe_id, content_type):
     recipe = get_recipe_or_404(recipe_id)
     require_recipe_author(recipe_id)

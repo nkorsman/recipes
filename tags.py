@@ -51,7 +51,7 @@ def tag_recipe(recipe_id, tag_name):
     sql = "SELECT COUNT(*) FROM RecipeTags WHERE recipe_id = ?"
     result = database.query_db(sql, [recipe_id], one=True)
     if result:
-        if result[0] >= 9:
+        if result[0] >= 10:
             return "Recipe cannot have more than 10 tags."
 
     if errors:
@@ -73,7 +73,7 @@ def untag_recipe(recipe_id, tag_id):
 
     sql = "SELECT recipe_count FROM Tags WHERE id = ?"
     result = database.query_db(sql, [tag_id], one=True)
-    if result >= 1:
+    if result[0] >= 1:
         sql = "UPDATE Tags SET recipe_count = recipe_count - 1 WHERE id = ?"
         db.execute(sql, [tag_id])
     else:
