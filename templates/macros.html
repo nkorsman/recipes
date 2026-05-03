@@ -47,7 +47,7 @@
                 </div>
             {% endif %}
         </div>
-        <div class="review-content">{{ review.content }}</div>
+        <div class="review-content">{{ review.content | show_lines }}</div>
         {% if edit %}
             <a class="button-link" href="/recipe/{{ review.recipe_id }}/review"
                 >Edit</a

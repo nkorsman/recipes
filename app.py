@@ -2,6 +2,7 @@ import math
 import secrets
 from functools import wraps
 
+import markupsafe
 from flask import Flask, abort, flash, redirect, render_template, request, session
 
 import config
@@ -14,6 +15,13 @@ import users
 app = Flask(__name__)
 app.teardown_appcontext(database.close_db)
 app.secret_key = config.secret_key
+
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 
 def csrf_required(f):
