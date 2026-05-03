@@ -150,7 +150,8 @@ def register():
 
     for error in errors:
         flash(error, "error")
-    return redirect("/register")
+
+    return render_template("register.html", filled_username=username)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -166,7 +167,7 @@ def login():
 
     if not users.check_password(user_id, password):
         flash("Username or password is incorrect.", "error")
-        return redirect("/login")
+        return render_template("login.html", filled_username=username)
 
     session["user_id"] = user_id
     session["username"] = username
