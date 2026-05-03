@@ -42,7 +42,6 @@ def count_recipes(**filters):
     joins, wheres, parameters = recipe_filters(**filters)
     sql = f"""SELECT COUNT(*)
              FROM Recipes R
-             JOIN Users U ON U.id = R.author_id
              {"\n".join(joins)}
              WHERE {" AND ".join(wheres)}
              """
