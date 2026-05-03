@@ -2,10 +2,9 @@
     <ul class="recipe-grid">
         {% for recipe in recipes %}
             <li>
-                <a href="/recipe/{{ recipe.id }}" class="title"
-                    >{{ recipe.title }}</a
-                >
-                <br />
+                <h3 class="title">
+                    <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
+                </h3>
                 <p class="author">
                     by
                     <a href="/user/{{ recipe.username }}"
@@ -29,31 +28,35 @@
 {% endmacro %}
 
 {% macro show_review(review, edit) %}
-    <div class="review">
-        <div class="review-header">
+    <article class="review">
+        <header class="review-header">
             {% if review.title %}
-                <a class="review-title" href="/recipe/{{ review.id }}"
-                    >{{ review.title }}</a
-                >
+                <h3 class="review-title">
+                    <a href="/recipe/{{ review.id }}">{{ review.title }}</a>
+                </h3>
             {% elif review.username %}
-                <a class="review-title" href="/user/{{ review.username }}"
-                    >{{ review.username }}</a
-                >
+                <h3 class="review-title">
+                    <a href="/user/{{ review.username }}">{{ review.username }}</a>
+                </h3>
             {% endif %}
-            <p class="date">{{ review.updated_at }}</p>
+            <p class="date">
+                <time datetime="{{ review.updated_at | replace(' ', 'T') }}"
+                    >{{ review.updated_at }}</time
+                >
+            </p>
             {% if review.rating %}
                 <div class="rating">
                     {{ "★" * review.rating }}{{ "☆" * (5 - review.rating) }}
                 </div>
             {% endif %}
-        </div>
+        </header>
         <div class="review-content">{{ review.content | show_lines }}</div>
         {% if edit %}
             <a class="button-link" href="/recipe/{{ review.recipe_id }}/review"
                 >Edit</a
             >
         {% endif %}
-    </div>
+    </article>
 {% endmacro %}
 
 {% macro review_list(reviews) %}

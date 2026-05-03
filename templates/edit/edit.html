@@ -64,13 +64,15 @@
                     type="submit"
                     name="action"
                     value="remove:{{ loop.index0 }}"
+                    aria-label="Remove {{ tag.name }} tag"
                 >
                     x</button
                 >)
             {% endfor %}
         {% endif %}
         <br /><br />
-        <input type="text" placeholder="New tag" name="new_tag" />
+        <label for="new-tag">New tag</label>
+        <input type="text" id="new-tag" name="new_tag" />
         <button type="submit" name="action" value="new">Add tag</button>
     </form>
 {% endblock tags %}

@@ -8,124 +8,132 @@
 {% endblock %}
 
 {% block content %}
-    <div class="title">
-        {% block recipe_title %}
-            <h2 class="title">{{ recipe.title }}</h2>
-        {% endblock recipe_title %}
-    </div>
-    <div class="recipe">
-        <div class="actions">
-            <ul>
-                {% block actions %}
-                    {% if recipe.is_author %}
-                        <li>
-                            <a
-                                class="button-link"
-                                href="/recipe/{{ recipe.id }}/edit"
-                                >Edit recipe
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if session.user_id %}
-                        <li>
-                            <form
-                                method="post"
-                                action="/recipe/{{ recipe.id }}/favorite"
-                            >
-                                <input
-                                    type="hidden"
-                                    name="csrf_token"
-                                    value="{{ session.csrf_token }}"
-                                />
-                                {% if recipe.is_favorite %}
-                                    <button
-                                        type="submit"
-                                        name="action"
-                                        value="unfavorite"
-                                    >
-                                        Unfavorite recipe
-                                    </button>
-                                {% else %}
-                                    <button
-                                        type="submit"
-                                        name="action"
-                                        value="favorite"
-                                    >
-                                        Favorite recipe
-                                    </button>
-                                {% endif %}
-                            </form>
-                        </li>
-                    {% endif %}
-                {% endblock actions %}
-            </ul>
-        </div>
+    <article>
+        <header class="title">
+            {% block recipe_title %}
+                <h2 class="title">{{ recipe.title }}</h2>
+            {% endblock recipe_title %}
+        </header>
 
-        <div class="info">
-            This recipe is by user
-            <a href="/user/{{ recipe.author }}">{{ recipe.author }}</a>. It was
-            last modified at {{ recipe.updated_at }}.
-            {% block tags %}
-                {% if recipe.tags %}
-                    It has the following tags:
-                    {% for tag in recipe.tags %}
-                        <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
-                    {% endfor %}
-                {% endif %}
-            {% endblock tags %}
-        </div>
+        <div class="recipe">
+            <section class="actions" aria-label="Recipe actions">
+                <ul>
+                    {% block actions %}
+                        {% if recipe.is_author %}
+                            <li>
+                                <a
+                                    class="button-link"
+                                    href="/recipe/{{ recipe.id }}/edit"
+                                    >Edit recipe
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if session.user_id %}
+                            <li>
+                                <form
+                                    method="post"
+                                    action="/recipe/{{ recipe.id }}/favorite"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="csrf_token"
+                                        value="{{ session.csrf_token }}"
+                                    />
+                                    {% if recipe.is_favorite %}
+                                        <button
+                                            type="submit"
+                                            name="action"
+                                            value="unfavorite"
+                                        >
+                                            Unfavorite recipe
+                                        </button>
+                                    {% else %}
+                                        <button
+                                            type="submit"
+                                            name="action"
+                                            value="favorite"
+                                        >
+                                            Favorite recipe
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </li>
+                        {% endif %}
+                    {% endblock actions %}
+                </ul>
+            </section>
 
-        <div class="ingredients">
-            <h3>Ingredients</h3>
-            {% block ingredients %}
-                {% if recipe.ingredients %}
-                    <ul>
-                        {% for ingredient in recipe.ingredients %}
-                            <li>{{ ingredient.content }}</li>
+            <section class="info" aria-label="Recipe information">
+                This recipe is by user
+                <a href="/user/{{ recipe.author }}">{{ recipe.author }}</a>. It
+                was last modified at
+                <time datetime="{{ recipe.updated_at | replace(' ', 'T') }}"
+                    >{{ recipe.updated_at }}</time
+                >.
+                {% block tags %}
+                    {% if recipe.tags %}
+                        It has the following tags:
+                        {% for tag in recipe.tags %}
+                            <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
                         {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>This recipe doesn't include any ingredients yet.</p>
-                {% endif %}
-            {% endblock ingredients %}
-        </div>
+                    {% endif %}
+                {% endblock tags %}
+            </section>
 
-        <div class="instructions">
-            <h3>Preparation</h3>
-            {% block instructions %}
-                {% if recipe.instructions %}
-                    <ol>
-                        {% for instruction in recipe.instructions %}
-                            <li>{{ instruction.content }}</li>
-                        {% endfor %}
-                    </ol>
-                {% else %}
-                    <p>This recipe doesn't have any preparation steps yet.</p>
-                {% endif %}
-            {% endblock instructions %}
-        </div>
-    </div>
+            <section class="ingredients">
+                <h3>Ingredients</h3>
+                {% block ingredients %}
+                    {% if recipe.ingredients %}
+                        <ul>
+                            {% for ingredient in recipe.ingredients %}
+                                <li>{{ ingredient.content }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>This recipe doesn't include any ingredients yet.</p>
+                    {% endif %}
+                {% endblock ingredients %}
+            </section>
 
-    <h3>Reviews</h3>
-    {% block reviews %}
-        {% if (not recipe.is_author) and session.user_id %}
-            {% if recipe.user_review %}
-                {{ show_review(recipe.user_review, True) }}
-            {% else %}
-                <a class="button-link" href="/recipe/{{ recipe.id }}/review"
-                    >Leave a review
-                </a>
+            <section class="instructions">
+                <h3>Preparation</h3>
+                {% block instructions %}
+                    {% if recipe.instructions %}
+                        <ol>
+                            {% for instruction in recipe.instructions %}
+                                <li>{{ instruction.content }}</li>
+                            {% endfor %}
+                        </ol>
+                    {% else %}
+                        <p>This recipe doesn't have any preparation steps yet.</p>
+                    {% endif %}
+                {% endblock instructions %}
+            </section>
+        </div>
+    </article>
+
+    <section>
+        <h3>Reviews</h3>
+        {% block reviews %}
+            {% if (not recipe.is_author) and session.user_id %}
+                {% if recipe.user_review %}
+                    {{ show_review(recipe.user_review, True) }}
+                {% else %}
+                    <a class="button-link" href="/recipe/{{ recipe.id }}/review"
+                        >Leave a review
+                    </a>
+                {% endif %}
             {% endif %}
-        {% endif %}
-        {% if recipe.reviews %}
-            {{ review_list(recipe.reviews) }}
-            <div class="pagination">
-                <a href="/recipe/{{ recipe.id }}/reviews" class="more"
-                    >More reviews →</a
-                >
-            </div>
-        {% else %}
-            This recipe doesn't have reviews yet. Be the first?
-        {% endif %}
-    {% endblock reviews %}
+            {% if recipe.reviews %}
+                {{ review_list(recipe.reviews) }}
+                <nav class="pagination" aria-label="Review pagination">
+                    <a href="/recipe/{{ recipe.id }}/reviews" class="more"
+                        >More reviews →</a
+                    >
+                </nav>
+            {% else %}
+                <p>This recipe doesn't have reviews yet. Be the first?</p>
+            {% endif %}
+        {% endblock reviews %}
+    </section>
 {% endblock content %}

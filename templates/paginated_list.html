@@ -11,13 +11,23 @@
     {% elif kind == "reviews" %}
         {{ review_list(items) }}
     {% endif %}
-    <p class="pagination">
+    <nav class="pagination" aria-label="Pagination">
         {% if page > 1 %}
-            <a class="button-link" href="?page={{ page-1 }}">←</a>
+            <a
+                class="button-link"
+                href="?page={{ page-1 }}"
+                aria-label="Previous page"
+                >←</a
+            >
         {% endif %}
         Page {{ page }} / {{ page_count }}
         {% if page < page_count %}
-            <a class="button-link" href="?page={{ page+1 }}">→</a>
+            <a
+                class="button-link"
+                href="?page={{ page+1 }}"
+                aria-label="Next page"
+                >→</a
+            >
         {% endif %}
-    </p>
+    </nav>
 {% endblock %}

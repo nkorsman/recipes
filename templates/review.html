@@ -7,8 +7,10 @@
             name="csrf_token"
             value="{{ session.csrf_token }}"
         />
-        <p>Rating:</p>
-        <select name="rating">
+        <p>
+            <label for="rating">Rating</label>
+        </p>
+        <select id="rating" name="rating">
             <option></option>
             {% for n in range(1, 6) %}
                 <option {% if review.rating == n %}selected{% endif %}>
@@ -17,8 +19,10 @@
             {% endfor %}
         </select>
         <br />
-        <p>Comment:</p>
-        <textarea name="comment">{{ review.content }}</textarea>
+        <p>
+            <label for="comment">Comment</label>
+        </p>
+        <textarea id="comment" name="comment">{{ review.content }}</textarea>
         <br />
         <button type="submit" name="action" value="submit">Submit</button>
         {% if review %}

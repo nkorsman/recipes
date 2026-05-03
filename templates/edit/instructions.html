@@ -12,7 +12,11 @@
             value="{{ session.csrf_token }}"
         />
         {% for item in items %}
+            <label for="instruction-{{ loop.index }}"
+                >Step {{ loop.index }}</label
+            ><br />
             <textarea
+                id="instruction-{{ loop.index }}"
                 name="item"
                 rows="4"
                 cols="60"
@@ -25,12 +29,20 @@
                 type="submit"
                 name="action"
                 value="remove:{{ loop.index0 }}"
+                aria-label="Remove step {{ loop.index }}"
             >
                 -
             </button>
             {% if not loop.last %}<br />{% endif %}
         {% endfor %}
-        <button type="submit" name="action" value="new">+</button>
+        <button
+            type="submit"
+            name="action"
+            value="new"
+            aria-label="Add new step"
+        >
+            +
+        </button>
         <br />
         <button type="submit" name="action" value="save">Save</button>
         <button type="submit" name="action" value="cancel">Cancel</button>

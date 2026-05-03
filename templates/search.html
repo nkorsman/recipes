@@ -5,12 +5,13 @@
     <h2>Search</h2>
     <form action="/search" method="get">
         <p>
-            Query:
-            {% if query %}
-                <input type="text" name="q" value="{{ query }}" />
-            {% else %}
-                <input type="text" name="q" />
-            {% endif %}
+            <label for="search-query">Query</label><br />
+            <input
+                type="text"
+                id="search-query"
+                name="q"
+                value="{{ query or '' }}"
+            />
             <button type="submit">Search</button>
         </p>
     </form>

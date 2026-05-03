@@ -48,26 +48,26 @@ button {
     text-decoration: underline;
 }
 
-nav {
+.main-nav {
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
 }
 
-nav ul {
+.main-nav ul {
     display: flex;
     padding: 0;
     margin: 0;
     list-style: none;
 }
 
-nav li {
+.main-nav li {
     display: inline-block;
     padding: 0 0.5em;
     margin: 0;
 }
 
-nav li:not(:last-of-type) {
+.main-nav li:not(:last-of-type) {
     border-right: 1px solid black;
 }
 
@@ -98,6 +98,8 @@ nav li:not(:last-of-type) {
 
 .recipe-grid .title {
     font-size: 20px;
+    line-height: 1.2;
+    margin: 0;
 }
 
 .recipe-grid .author {
@@ -138,7 +140,9 @@ nav li:not(:last-of-type) {
 
 .review-header .review-title {
     grid-column: 1;
+    font-size: 1rem;
     font-weight: bold;
+    line-height: 1.2;
     margin: 0;
 }
 

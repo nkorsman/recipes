@@ -4,47 +4,55 @@
 {% block content %}
     <h2>User {{ user.username }}</h2>
     {% if user.is_owner %}
-        <h3>Your draft recipes</h3>
-        {% if user.drafts %}
-            {{ recipe_list(user.drafts ) }}
-            <div class="pagination">
-                <a href="/user/{{ user.username }}/drafts"
-                    >All draft recipes →</a
+        <section>
+            <h3>Your draft recipes</h3>
+            {% if user.drafts %}
+                {{ recipe_list(user.drafts ) }}
+                <nav class="pagination" aria-label="Draft recipe pagination">
+                    <a href="/user/{{ user.username }}/drafts"
+                        >All draft recipes →</a
+                    >
+                </nav>
+            {% else %}
+                <p>You do not have any draft recipes.</p>
+            {% endif %}
+        </section>
+    {% endif %}
+    <section>
+        <h3>Authored recipes</h3>
+        {% if user.authored %}
+            {{ recipe_list(user.authored) }}
+            <nav class="pagination" aria-label="Authored recipe pagination">
+                <a href="/user/{{ user.username }}/recipes"
+                    >All authored recipes →</a
                 >
-            </div>
+            </nav>
         {% else %}
-            <p>You do not have any draft recipes.</p>
+            <p>This user hasn't published any recipes yet.</p>
         {% endif %}
-    {% endif %}
-    <h3>Authored recipes</h3>
-    {% if user.authored %}
-        {{ recipe_list(user.authored) }}
-        <div class="pagination">
-            <a href="/user/{{ user.username }}/recipes"
-                >All authored recipes →</a
-            >
-        </div>
-    {% else %}
-        <p>This user hasn't published any recipes yet.</p>
-    {% endif %}
-    <h3>Favorite recipes</h3>
-    {% if user.favorites %}
-        {{ recipe_list(user.favorites) }}
-        <div class="pagination">
-            <a href="/user/{{ user.username }}/favorites"
-                >All favorite recipes →</a
-            >
-        </div>
-    {% else %}
-        <p>This user has not favorited any recipes yet.</p>
-    {% endif %}
-    <h3>Recent reviews</h3>
-    {% if user.reviews %}
-        {{ review_list(user.reviews) }}
-    {% else %}
-        <p>This user hasn't reviewed any recipes yet.</p>
-    {% endif %}
-    <div class="pagination">
-        <a href="/user/{{ user.username }}/reviews">All reviews →</a>
-    </div>
+    </section>
+    <section>
+        <h3>Favorite recipes</h3>
+        {% if user.favorites %}
+            {{ recipe_list(user.favorites) }}
+            <nav class="pagination" aria-label="Favorite recipe pagination">
+                <a href="/user/{{ user.username }}/favorites"
+                    >All favorite recipes →</a
+                >
+            </nav>
+        {% else %}
+            <p>This user has not favorited any recipes yet.</p>
+        {% endif %}
+    </section>
+    <section>
+        <h3>Recent reviews</h3>
+        {% if user.reviews %}
+            {{ review_list(user.reviews) }}
+        {% else %}
+            <p>This user hasn't reviewed any recipes yet.</p>
+        {% endif %}
+        <nav class="pagination" aria-label="Review pagination">
+            <a href="/user/{{ user.username }}/reviews">All reviews →</a>
+        </nav>
+    </section>
 {% endblock %}
