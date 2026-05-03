@@ -23,3 +23,23 @@ You can then run the app with
 ```
 flask run
 ```
+
+## Large amounts of data
+The app uses pagination and database indexes to be able to handle large amounts of data. Running `seed.py` adds
+- 100 thousand users,
+- 10 thousand tags,
+- 1 million recipes,
+- roughly 4 million reviews
+- and roughly 4 million favorited recipes
+
+to the database. Running the seed script with these settings takes around 6 minutes on my machine.
+
+Here is a comparison of page load times before and after adding indexes:
+
+- Loading the homepage: 2.71 s -> 0.0 s
+- Loading the recipe listing: 0.68 s -> 0.08 s
+- Loading the tag listing: 2.33 s -> 0.01 s
+- Loading a random recipe: 0.33 s -> 0.01 s
+- Loading a random user's profile: 0.15 s -> 0.0 s
+- Loading a random tag page: 0.45 s -> 0.01 s
+- Loading a random recipe's reviews: 0.51 s -> 0.0 s
