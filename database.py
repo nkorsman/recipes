@@ -20,7 +20,7 @@ def query_db(query, args=(), one=False):
     return result.fetchall()
 
 
-def close_db():
+def close_db(exception):
     db = getattr(g, "db", None)
     if db is not None:
         db.close()

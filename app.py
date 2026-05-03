@@ -1,9 +1,8 @@
 import math
 import secrets
-import time
 from functools import wraps
 
-from flask import Flask, abort, flash, g, redirect, render_template, request, session
+from flask import Flask, abort, flash, redirect, render_template, request, session
 
 import config
 import database
@@ -15,18 +14,6 @@ import users
 app = Flask(__name__)
 app.teardown_appcontext(database.close_db)
 app.secret_key = config.secret_key
-
-
-@app.before_request
-def before_request():
-    g.start_time = time.time()
-
-
-@app.after_request
-def after_request(response):
-    elapsed_time = round(time.time() - g.start_time, 2)
-    print("elapsed time:", elapsed_time, "s")
-    return response
 
 
 def csrf_required(f):
