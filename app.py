@@ -1,8 +1,9 @@
 import math
 import secrets
+import time
 from functools import wraps
 
-from flask import Flask, abort, flash, redirect, render_template, request, session
+from flask import Flask, abort, flash, g, redirect, render_template, request, session
 
 import config
 import database
@@ -216,11 +217,24 @@ def show_recipe(recipe_id):
 @app.route("/tag/<tag_name>")
 def show_tag(tag_name):
     tag_id = tags.get_id(tag_name)
-    tag = tags.get_tag(tag_id)
-    if tag is None:
+    if not tag_id:
         abort(404, "This tag could not be found.")
 
-    return render_template("tag.html", tag=tag)
+    title = f"All recipes tagged with {tag_name}"
+    recipe_list, page, page_count = paginate(
+        count_items=recipes.count_recipes,
+        get_items=recipes.get_recipes,
+        page_size=21,
+        tag_id=tag_id,
+    )
+    return render_template(
+        "paginated_list.html",
+        title=title,
+        items=recipe_list,
+        kind="recipes",
+        page=page,
+        page_count=page_count,
+    )
 
 
 @app.route("/user/<username>")
@@ -253,7 +267,7 @@ def show_user_recipes(username):
         "paginated_list.html",
         title=title,
         items=recipe_list,
-        kind=recipes,
+        kind="recipes",
         page=page,
         page_count=page_count,
     )
@@ -276,7 +290,7 @@ def show_user_favorites(username):
         "paginated_list.html",
         title=title,
         items=recipe_list,
-        kind=recipes,
+        kind="recipes",
         page=page,
         page_count=page_count,
     )

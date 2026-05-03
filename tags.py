@@ -1,5 +1,4 @@
 import database
-import recipes
 
 
 def get_tags(page=1, page_size=30):
@@ -18,18 +17,6 @@ def count_tags():
     sql = "SELECT COUNT(*)FROM Tags"
     result = database.query_db(sql, one=True)
     return result[0] if result else 0
-
-
-def get_tag(id):
-    sql = "SELECT id, name FROM Tags WHERE id = ?"
-    result = database.query_db(sql, [id], one=True)
-    if result is None:
-        return None
-
-    tag = dict(result)
-    tag["recipes"] = recipes.get_recipes(tag_id=id)
-
-    return tag
 
 
 def get_id(name):
