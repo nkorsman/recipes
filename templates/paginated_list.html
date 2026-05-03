@@ -13,11 +13,11 @@
     {% endif %}
     <p class="pagination">
         {% if page > 1 %}
-            <a href="?page={{ page-1 }}"><button>←</button></a>
+            <a class="button-link" href="?page={{ page-1 }}">←</a>
         {% endif %}
         Page {{ page }} / {{ page_count }}
         {% if page < page_count %}
-            <a href="?page={{ page+1 }}"><button>→</button></a>
+            <a class="button-link" href="?page={{ page+1 }}">→</a>
         {% endif %}
     </p>
 {% endblock %}

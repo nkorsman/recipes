@@ -19,8 +19,10 @@
                 {% block actions %}
                     {% if recipe.is_author %}
                         <li>
-                            <a href="/recipe/{{ recipe.id }}/edit"
-                                ><button>Edit recipe</button>
+                            <a
+                                class="button-link"
+                                href="/recipe/{{ recipe.id }}/edit"
+                                >Edit recipe
                             </a>
                         </li>
                     {% endif %}
@@ -98,7 +100,7 @@
                         {% endfor %}
                     </ol>
                 {% else %}
-                    This recipe doesn't have any preparation steps yet.
+                    <p>This recipe doesn't have any preparation steps yet.</p>
                 {% endif %}
             {% endblock instructions %}
         </div>
@@ -110,16 +112,20 @@
             {% if recipe.user_review %}
                 {{ show_review(recipe.user_review, True) }}
             {% else %}
-                <a href="/recipe/{{ recipe.id }}/review"
-                    ><button>Leave a review</button>
+                <a class="button-link" href="/recipe/{{ recipe.id }}/review"
+                    >Leave a review
                 </a>
             {% endif %}
         {% endif %}
-        {{ review_list(recipe.reviews) }}
-        <div class="pagination">
-            <a href="/recipe/{{ recipe.id }}/reviews" class="more"
-                >More reviews →</a
-            >
-        </div>
+        {% if recipe.reviews %}
+            {{ review_list(recipe.reviews) }}
+            <div class="pagination">
+                <a href="/recipe/{{ recipe.id }}/reviews" class="more"
+                    >More reviews →</a
+                >
+            </div>
+        {% else %}
+            This recipe doesn't have reviews yet. Be the first?
+        {% endif %}
     {% endblock reviews %}
 {% endblock content %}

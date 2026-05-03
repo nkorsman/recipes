@@ -30,6 +30,10 @@ li {
     width: 100%;
 }
 
+.actions .button-link {
+    width: 100%;
+}
+
 .info {
     grid-column: 2;
 }

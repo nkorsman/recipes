@@ -18,6 +18,24 @@ button {
     padding: 0.5em;
     cursor: pointer;
     border-radius: 4px;
+    font: inherit;
+    font-size: 0.8rem;
+    font-family: sans-serif;
+}
+
+.button-link {
+    background-color: maroon;
+    color: white;
+    border: none;
+    padding: 0.5em;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    font-family: sans-serif;
 }
 
 nav {
@@ -83,7 +101,7 @@ nav li:not(:last-of-type) {
 }
 
 .tag-list {
-    column-count: 5;
+    column-count: 3;
 }
 
 .tag {

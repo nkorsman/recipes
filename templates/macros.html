@@ -49,9 +49,9 @@
         </div>
         <div class="review-content">{{ review.content }}</div>
         {% if edit %}
-            <a href="/recipe/{{ review.recipe_id }}/review"
-                ><button>Edit</button>
-            </a>
+            <a class="button-link" href="/recipe/{{ review.recipe_id }}/review"
+                >Edit</a
+            >
         {% endif %}
     </div>
 {% endmacro %}
