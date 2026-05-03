@@ -60,6 +60,7 @@ nav li:not(:last-of-type) {
     list-style: none;
     padding: 0;
     gap: 1em;
+    overflow-wrap: anywhere;
 }
 
 .recipe-grid li {
@@ -74,4 +75,12 @@ nav li:not(:last-of-type) {
 .pagination {
     text-align: right;
     font-weight: bold;
+}
+
+.tag-list {
+    column-count: 5;
+}
+
+.tag {
+    padding: 0.2em;
 }

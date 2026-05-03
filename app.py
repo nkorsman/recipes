@@ -95,6 +95,14 @@ def show_recipes():
     )
 
 
+@app.route("/tags")
+def show_tags():
+    tag_list, page, page_count = paginate(
+        count_items=tags.count_tags, get_items=tags.get_tags, page_size=100
+    )
+    return render_template("tags.html", tags=tag_list, page=page, page_count=page_count)
+
+
 @app.route("/search")
 def search():
     query = request.args.get("q")
@@ -185,8 +193,8 @@ def show_recipe(recipe_id):
 
     recipe["is_author"] = users.is_recipe_author(user_id, recipe_id)
     recipe["is_favorite"] = users.is_recipe_favorite(user_id, recipe_id)
-    recipe["user_review"] = reviews.get_user_review(user_id, recipe_id)
-    recipe["reviews"] = reviews.get_reviews(recipe_id, user_id)
+    recipe["user_review"] = reviews.get_review(user_id, recipe_id)
+    recipe["reviews"] = reviews.get_reviews(recipe_id, excluded_user=user_id)
 
     if recipe["is_draft"]:
         if recipe["is_author"]:
@@ -430,7 +438,7 @@ def delete_recipe(recipe_id):
 def review_recipe(recipe_id):
     recipe = get_recipe_or_404(recipe_id)
     if request.method == "GET":
-        review = reviews.get_user_review(session["user_id"], recipe_id)
+        review = reviews.get_review(session["user_id"], recipe_id)
         return render_template("review.html", recipe=recipe, review=review)
 
     user_id = session["user_id"]

@@ -45,7 +45,7 @@ def user_has_reviewed(user_id, recipe_id):
     return exists is not None
 
 
-def get_user_review(user_id, recipe_id):
+def get_review(user_id, recipe_id):
     sql = """SELECT U.username, R.rating, R.content, R.updated_at, R.recipe_id
              FROM Reviews R
              JOIN Users U on U.id = R.user_id

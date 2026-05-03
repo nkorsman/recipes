@@ -1,19 +1,26 @@
 {% macro recipe_list(recipes) %}
-    {% if recipes %}
-        <ul class="recipe-grid">
-            {% for recipe in recipes %}
-                <li>
-                    <a href="/recipe/{{ recipe.id }}" class="title"
-                        >{{ recipe.title }}</a
-                    >
-                    <br />
-                    by {{ recipe.username }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No recipes found.</p>
-    {% endif %}
+    <ul class="recipe-grid">
+        {% for recipe in recipes %}
+            <li>
+                <a href="/recipe/{{ recipe.id }}" class="title"
+                    >{{ recipe.title }}</a
+                >
+                <br />
+                by {{ recipe.username }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% macro tag_list(tags) %}
+    <ul class="tag-list">
+        {% for tag in tags %}
+            <li class="tag">
+                <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
+                ({{ tag.recipe_count }})
+            </li>
+        {% endfor %}
+    </ul>
 {% endmacro %}
 
 {% macro show_review(review, edit) %}

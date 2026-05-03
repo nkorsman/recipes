@@ -2,13 +2,22 @@ import database
 import recipes
 
 
-def get_tags():
+def get_tags(page=1, page_size=30):
+    limit = page_size
+    offset = page_size * (page - 1)
     sql = """SELECT T.name, COUNT(R.id) AS recipe_count
              FROM Tags T
              JOIN RecipeTags R ON R.tag_id = T.id
              GROUP BY T.id
-             ORDER BY recipe_count desc"""
-    return database.query_db(sql)
+             ORDER BY recipe_count desc
+             LIMIT ? OFFSET ?"""
+    return database.query_db(sql, [limit, offset])
+
+
+def count_tags():
+    sql = "SELECT COUNT(*)FROM Tags"
+    result = database.query_db(sql, one=True)
+    return result[0] if result else 0
 
 
 def get_tag(id):

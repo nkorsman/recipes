@@ -1,22 +1,22 @@
-{% from "macros.html" import recipe_list %}
+{% from "macros.html" import recipe_list, tag_list %}
 {% extends "layout.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
     <h2>Latest recipes</h2>
-    {{ recipe_list(recipes) }}
-    <div class="pagination">
-        <a href="/recipes" class="more">More recipes →</a>
-    </div>
+    {% if recipes %}
+        {{ recipe_list(recipes) }}
+        <div class="pagination">
+            <a href="/recipes" class="more">More recipes →</a>
+        </div>
+    {% else %}
+        <p>No recipes found.</p>
+    {% endif %}
     <h2>Popular tags</h2>
     {% if tags %}
-        <ul>
-            {% for tag in tags %}
-                <li>
-                    <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
-                    ({{ tag.recipe_count }})
-                </li>
-            {% endfor %}
-        </ul>
+        {{ tag_list(tags) }}
+        <div class="pagination">
+            <a href="/tags" class="more">More tags →</a>
+        </div>
     {% else %}
         <p>No tags found.</p>
     {% endif %}
