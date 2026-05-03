@@ -8,11 +8,11 @@ body {
 }
 
 a {
-    color: saddlebrown;
+    color: maroon;
 }
 
 button {
-    background-color: saddlebrown;
+    background-color: maroon;
     color: white;
     border: none;
     padding: 0.5em;
@@ -70,6 +70,11 @@ nav li:not(:last-of-type) {
 
 .recipe-grid .title {
     font-size: 20px;
+}
+
+.recipe-grid .author {
+    margin: 0.25em 0;
+    font-size: 0.9rem;
 }
 
 .pagination {

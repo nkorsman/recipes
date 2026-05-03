@@ -6,7 +6,12 @@
                     >{{ recipe.title }}</a
                 >
                 <br />
-                by {{ recipe.username }}
+                <p class="author">
+                    by
+                    <a href="/user/{{ recipe.username }}"
+                        >{{ recipe.username }}</a
+                    >
+                </p>
             </li>
         {% endfor %}
     </ul>

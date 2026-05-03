@@ -6,7 +6,7 @@
     {% if recipes %}
         {{ recipe_list(recipes) }}
         <div class="pagination">
-            <a href="/recipes" class="more">More recipes →</a>
+            <a href="/recipes">More recipes →</a>
         </div>
     {% else %}
         <p>No recipes found.</p>
@@ -15,7 +15,7 @@
     {% if tags %}
         {{ tag_list(tags) }}
         <div class="pagination">
-            <a href="/tags" class="more">More tags →</a>
+            <a href="/tags">More tags →</a>
         </div>
     {% else %}
         <p>No tags found.</p>

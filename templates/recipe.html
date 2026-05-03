@@ -65,7 +65,7 @@
             last modified at {{ recipe.updated_at }}.
             {% block tags %}
                 {% if recipe.tags %}
-                    This recipe has the following tags:
+                    It has the following tags:
                     {% for tag in recipe.tags %}
                         <a href="/tag/{{ tag.name }}">{{ tag.name }}</a>
                     {% endfor %}
