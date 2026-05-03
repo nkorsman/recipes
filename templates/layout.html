@@ -24,7 +24,18 @@
                             >{{ session.username }}
                         </a>
                     </li>
-                    <li><a href="/logout">Log out</a></li>
+                    <li>
+                        <form method="post" action="/logout">
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="{{ session.csrf_token }}"
+                            />
+                            <button type="submit" class="link-button">
+                                Log out
+                            </button>
+                        </form>
+                    </li>
                 {% else %}
                     <li><a href="/login">Log in</a></li>
                     <li><a href="/register">Register</a></li>

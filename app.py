@@ -17,6 +17,18 @@ app.teardown_appcontext(database.close_db)
 app.secret_key = config.secret_key
 
 
+@app.before_request
+def before_request():
+    g.start_time = time.time()
+
+
+@app.after_request
+def after_request(response):
+    elapsed_time = round(time.time() - g.start_time, 2)
+    print("elapsed time:", elapsed_time, "s")
+    return response
+
+
 def csrf_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -167,12 +179,15 @@ def login():
     return redirect("/")
 
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 @login_required
+@csrf_required
 def logout():
     del session["user_id"]
     del session["username"]
     del session["csrf_token"]
+
+    flash("You have been successfully logged out.", "success")
     return redirect("/")
 
 
