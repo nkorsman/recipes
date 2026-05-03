@@ -87,9 +87,10 @@ def show_recipes():
         count_items=recipes.count_recipes, get_items=recipes.get_recipes, page_size=21
     )
     return render_template(
-        "recipes.html",
+        "paginated_list.html",
         title="All recipes",
-        recipes=recipe_list,
+        items=recipe_list,
+        kind="recipes",
         page=page,
         page_count=page_count,
     )
@@ -100,7 +101,14 @@ def show_tags():
     tag_list, page, page_count = paginate(
         count_items=tags.count_tags, get_items=tags.get_tags, page_size=100
     )
-    return render_template("tags.html", tags=tag_list, page=page, page_count=page_count)
+    return render_template(
+        "paginated_list.html",
+        title="All tags",
+        items=tag_list,
+        kind="tags",
+        page=page,
+        page_count=page_count,
+    )
 
 
 @app.route("/search")
@@ -242,9 +250,10 @@ def show_user_recipes(username):
         user_id=user_id,
     )
     return render_template(
-        "recipes.html",
+        "paginated_list.html",
         title=title,
-        recipes=recipe_list,
+        items=recipe_list,
+        kind=recipes,
         page=page,
         page_count=page_count,
     )
@@ -264,9 +273,10 @@ def show_user_favorites(username):
         favorited_by=user_id,
     )
     return render_template(
-        "recipes.html",
+        "paginated_list.html",
         title=title,
-        recipes=recipe_list,
+        items=recipe_list,
+        kind=recipes,
         page=page,
         page_count=page_count,
     )
@@ -288,9 +298,10 @@ def show_user_drafts(username):
         published=False,
     )
     return render_template(
-        "recipes.html",
+        "paginated_list.html",
         title=title,
-        recipes=recipe_list,
+        items=recipe_list,
+        kind="recipes",
         page=page,
         page_count=page_count,
     )
@@ -459,6 +470,7 @@ def review_recipe(recipe_id):
 @app.route("/recipe/<int:recipe_id>/reviews")
 def show_reviews(recipe_id):
     recipe = get_recipe_or_404(recipe_id)
+    title = f"All reviews of {recipe['title']}"
     review_list, page, page_count = paginate(
         count_items=reviews.count_reviews,
         get_items=reviews.get_reviews,
@@ -467,9 +479,33 @@ def show_reviews(recipe_id):
     )
 
     return render_template(
-        "reviews.html",
-        recipe=recipe,
-        reviews=review_list,
+        "paginated_list.html",
+        title=title,
+        items=review_list,
+        kind="reviews",
+        page=page,
+        page_count=page_count,
+    )
+
+
+@app.route("/user/<username>/reviews")
+def show_user_reviews(username):
+    user_id = users.get_id(username)
+    if not user_id:
+        abort(404, "This user could not be found.")
+
+    title = f"All reviews by {username}"
+    review_list, page, page_count = paginate(
+        count_items=reviews.count_user_reviews,
+        get_items=reviews.get_user_reviews,
+        page_size=5,
+        user_id=user_id,
+    )
+    return render_template(
+        "paginated_list.html",
+        title=title,
+        items=review_list,
+        kind="reviews",
         page=page,
         page_count=page_count,
     )

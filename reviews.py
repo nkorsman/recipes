@@ -17,9 +17,21 @@ def get_reviews(recipe_id, page=1, page_size=4, excluded_user=None):
              JOIN Users U on U.id = R.user_id
              WHERE R.recipe_id = ?
              {condition}
-             ORDER BY R.updated_at
+             ORDER BY R.updated_at DESC
              LIMIT ? OFFSET ?"""
     return database.query_db(sql, parameters)
+
+
+def get_user_reviews(user_id, page=1, page_size=3):
+    limit = page_size
+    offset = page_size * (page - 1)
+    sql = """SELECT C.id, C.title, R.rating, R.content, R.updated_at
+             FROM Reviews R
+             JOIN Recipes C on C.id = R.recipe_id
+             WHERE R.user_id = ?
+             ORDER BY R.updated_at DESC
+             LIMIT ? OFFSET ?"""
+    return database.query_db(sql, [user_id, limit, offset])
 
 
 def count_reviews(recipe_id, excluded_user=None):
@@ -36,6 +48,12 @@ def count_reviews(recipe_id, excluded_user=None):
              {condition}
              """
     result = database.query_db(sql, parameters, one=True)
+    return result[0] if result else 0
+
+
+def count_user_reviews(user_id):
+    sql = "SELECT COUNT(*) FROM Reviews R WHERE R.user_id = ?"
+    result = database.query_db(sql, [user_id], one=True)
     return result[0] if result else 0
 
 

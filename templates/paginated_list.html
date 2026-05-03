@@ -1,10 +1,16 @@
-{% from "macros.html" import recipe_list %}
+{% from "macros.html" import recipe_list, tag_list, review_list %}
 {% extends "layout.html" %}
 {% block title %}{{ title }}{% endblock %}
+
 {% block content %}
     <h2>{{ title }}</h2>
-    {{ recipe_list(recipes) }}
-
+    {% if kind == "recipes" %}
+        {{ recipe_list(items) }}
+    {% elif kind == "tags" %}
+        {{ tag_list(items) }}
+    {% elif kind == "reviews" %}
+        {{ review_list(items) }}
+    {% endif %}
     <p class="pagination">
         {% if page > 1 %}
             <a href="?page={{ page-1 }}"><button>←</button></a>

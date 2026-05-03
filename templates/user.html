@@ -1,4 +1,4 @@
-{% from "macros.html" import recipe_list %}
+{% from "macros.html" import recipe_list, review_list %}
 {% extends "layout.html" %}
 {% block title %}{{ user.username }}{% endblock %}
 {% block content %}
@@ -8,7 +8,7 @@
         {% if user.drafts %}
             {{ recipe_list(user.drafts ) }}
             <div class="pagination">
-                <a href="/user/{{ user.username }}/drafts" class="more"
+                <a href="/user/{{ user.username }}/drafts"
                     >All draft recipes →</a
                 >
             </div>
@@ -20,7 +20,7 @@
     {% if user.authored %}
         {{ recipe_list(user.authored) }}
         <div class="pagination">
-            <a href="/user/{{ user.username }}/recipes" class="more"
+            <a href="/user/{{ user.username }}/recipes"
                 >All authored recipes →</a
             >
         </div>
@@ -31,11 +31,20 @@
     {% if user.favorites %}
         {{ recipe_list(user.favorites) }}
         <div class="pagination">
-            <a href="/user/{{ user.username }}/favorites" class="more"
+            <a href="/user/{{ user.username }}/favorites"
                 >All favorite recipes →</a
             >
         </div>
     {% else %}
         <p>This user has not favorited any recipes yet.</p>
     {% endif %}
+    <h3>Recent reviews</h3>
+    {% if user.reviews %}
+        {{ review_list(user.reviews) }}
+    {% else %}
+        <p>This user hasn't reviewed any recipes yet.</p>
+    {% endif %}
+    <div class="pagination">
+        <a href="/user/{{ user.username }}/reviews">All reviews →</a>
+    </div>
 {% endblock %}

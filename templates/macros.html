@@ -26,7 +26,15 @@
 {% macro show_review(review, edit) %}
     <div class="review">
         <div class="review-header">
-            <p class="reviewer">{{ review.username }}</p>
+            {% if review.title %}
+                <a class="review-title" href="/recipe/{{ review.id }}"
+                    >{{ review.title }}</a
+                >
+            {% elif review.username %}
+                <a class="review-title" href="/user/{{ review.username }}"
+                    >{{ review.username }}</a
+                >
+            {% endif %}
             <p class="date">{{ review.updated_at }}</p>
             {% if review.rating %}
                 <div class="rating">

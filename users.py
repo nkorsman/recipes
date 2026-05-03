@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 import database
 import recipes
+import reviews
 
 
 def get_user(id):
@@ -16,6 +17,7 @@ def get_user(id):
     user["authored"] = recipes.get_recipes(page_size=6, user_id=id)
     user["favorites"] = recipes.get_recipes(page_size=6, favorited_by=id)
     user["drafts"] = recipes.get_recipes(page_size=6, user_id=id, published=False)
+    user["reviews"] = reviews.get_user_reviews(id)
 
     return user
 
